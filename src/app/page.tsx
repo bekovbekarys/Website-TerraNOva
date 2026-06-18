@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { PreprintCard } from "@/components/PreprintCard";
+import { HeroArt } from "@/components/HeroArt";
+import { SubjectIcon } from "@/components/SubjectIcon";
 import { SUBJECTS, SITE_TAGLINE } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -58,12 +60,8 @@ export default async function HomePage() {
               "radial-gradient(circle at 18% 28%, #54ad7f 0, transparent 42%), radial-gradient(circle at 82% 18%, #1aa6ff 0, transparent 38%), radial-gradient(circle at 65% 95%, #8acca8 0, transparent 45%)",
           }}
         />
-        {/* Glowing globe motif */}
+        {/* Glowing wash behind the scene */}
         <div className="pointer-events-none absolute -right-24 top-1/2 hidden h-[34rem] w-[34rem] -translate-y-1/2 rounded-full bg-gradient-to-tr from-ocean-500/30 to-terra-300/20 blur-2xl lg:block" />
-        <div className="pointer-events-none absolute -right-10 top-1/2 hidden h-96 w-96 -translate-y-1/2 rounded-full border border-white/10 lg:block">
-          <div className="absolute inset-8 rounded-full border border-white/10" />
-          <div className="absolute inset-20 rounded-full border border-white/10" />
-        </div>
         {/* Subtle grid texture */}
         <div
           className="absolute inset-0 opacity-[0.07]"
@@ -74,8 +72,9 @@ export default async function HomePage() {
           }}
         />
 
-        <div className="container-page relative py-20 sm:py-28">
-          <div className="max-w-3xl animate-fade-up">
+        <div className="container-page relative py-20 sm:py-24">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
+          <div className="max-w-2xl animate-fade-up">
             <span className="badge bg-white/10 text-terra-50 ring-1 ring-inset ring-white/20 backdrop-blur">
               Free · Open access · Community-led
             </span>
@@ -123,6 +122,12 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
+
+            {/* Hero illustration */}
+            <div className="relative hidden justify-center lg:flex">
+              <HeroArt className="w-full max-w-[26rem] animate-fade-up drop-shadow-2xl" />
+            </div>
+          </div>
         </div>
 
         {/* Stats strip */}
@@ -139,6 +144,24 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Mountain-ridge transition into the page */}
+        <div className="relative" aria-hidden="true">
+          <svg
+            viewBox="0 0 1440 130"
+            preserveAspectRatio="none"
+            className="block h-[54px] w-full sm:h-[88px]"
+          >
+            <path
+              d="M0 130V86l160-26 170 30 175-44 180 40 165-34 170 36 150-26 140 30V130Z"
+              fill="#f5f5f4"
+            />
+            <path
+              d="M0 130V104l140-22 165 26 175-34 165 32 175-30 160 30 155-22 140 22V130Z"
+              fill="#fafaf9"
+            />
+          </svg>
         </div>
       </section>
 
@@ -194,8 +217,10 @@ export default async function HomePage() {
                 href={`/browse?subject=${encodeURIComponent(subject)}`}
                 className="group card flex items-center justify-between gap-2 px-4 py-3 transition hover:-translate-y-0.5 hover:border-terra-300 hover:shadow-md"
               >
-                <span className="flex items-center gap-2.5">
-                  <span className="h-2 w-2 shrink-0 rounded-full bg-terra-300 transition group-hover:bg-terra-600" />
+                <span className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-terra-50 text-terra-600 transition group-hover:bg-terra-100 group-hover:text-terra-700">
+                    <SubjectIcon subject={subject} className="h-5 w-5" />
+                  </span>
                   <span className="text-sm font-medium text-stone-700 group-hover:text-terra-800">
                     {subject}
                   </span>
