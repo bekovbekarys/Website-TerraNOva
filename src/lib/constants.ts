@@ -4,6 +4,16 @@ export const SITE_TAGLINE =
 export const SITE_DESCRIPTION =
   "TerraNova is a free, community-led repository where researchers share preprints across the Earth, planetary, and environmental sciences. Open to read, open to submit.";
 
+// Featured environmental cause: the International Fund for Saving the Aral Sea
+// (IFAS), an intergovernmental fund working to address the Aral Sea crisis in
+// Central Asia. TerraNova links readers here to support real-world action.
+export const SUPPORT_FUND = {
+  name: "International Fund for Saving the Aral Sea",
+  shortName: "IFAS",
+  url: "https://ecifas.kz/en/",
+  region: "Central Asia · Kazakhstan",
+} as const;
+
 // Subject taxonomy for the Earth & environmental sciences.
 export const SUBJECTS: string[] = [
   "Atmospheric Sciences",

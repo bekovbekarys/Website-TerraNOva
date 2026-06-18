@@ -19,6 +19,7 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
           <NavLink href="/browse">Browse</NavLink>
           <NavLink href="/guidelines">Guidelines</NavLink>
           <NavLink href="/about">About</NavLink>
+          <NavLink href="/support">Support</NavLink>
           <NavLink href="/submit">Submit</NavLink>
         </nav>
 
