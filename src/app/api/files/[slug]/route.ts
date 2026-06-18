@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { readFile } from "@/lib/storage";
 import { isDemoPreprint } from "@/lib/utils";
+import { unavailablePdf } from "@/lib/pdf";
 
 export async function GET(
   req: Request,
@@ -26,13 +27,23 @@ export async function GET(
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
-  // Sample/demonstration preprints carry placeholder files and are not
-  // meant to be opened or downloaded.
+  // Demonstration preprints have no real manuscript attached. Serve a
+  // placeholder PDF stating that the document is unavailable, so opening or
+  // downloading it never exposes real content.
   if (isDemoPreprint(preprint)) {
-    return NextResponse.json(
-      { error: "This is a demonstration preprint; its PDF is not available." },
-      { status: 403 }
-    );
+    const placeholder = unavailablePdf();
+    const body = new Uint8Array(placeholder);
+    const download = new URL(req.url).searchParams.get("download") === "1";
+    const disposition = download ? "attachment" : "inline";
+    return new NextResponse(body, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `${disposition}; filename="unavailable.pdf"`,
+        "Content-Length": String(body.length),
+        "Cache-Control": "private, max-age=0, must-revalidate",
+      },
+    });
   }
 
   // Published files are public. Non-published files are visible only to the

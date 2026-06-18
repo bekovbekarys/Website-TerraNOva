@@ -22,59 +22,16 @@ function slugify(input: string): string {
     .slice(0, 80);
 }
 
-// --- Minimal PDF generator (standard Helvetica font, no embedding needed) ---
+// --- Placeholder PDF generator -------------------------------------------
+// Demonstration preprints carry no real manuscript; their file simply states
+// that the PDF is unavailable.
 
 function escapePdf(s: string): string {
   return s.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
 }
 
-function wrap(text: string, width: number): string[] {
-  const words = text.split(/\s+/);
-  const lines: string[] = [];
-  let cur = "";
-  for (const w of words) {
-    if ((cur + " " + w).trim().length > width) {
-      if (cur) lines.push(cur);
-      cur = w;
-    } else {
-      cur = cur ? `${cur} ${w}` : w;
-    }
-  }
-  if (cur) lines.push(cur);
-  return lines;
-}
-
-type Seg = { text: string; size: number; gap: number };
-
-function makePdf(p: {
-  title: string;
-  authors: string;
-  subject: string;
-  abstract: string;
-}): Buffer {
-  const segs: Seg[] = [];
-  // Title
-  wrap(p.title, 52).forEach((l, i) => segs.push({ text: l, size: 18, gap: i === 0 ? 0 : 22 }));
-  // Authors
-  segs.push({ text: p.authors, size: 11, gap: 30 });
-  segs.push({ text: `TerraNova preprint  -  ${p.subject}`, size: 10, gap: 16 });
-  // Abstract heading
-  segs.push({ text: "Abstract", size: 13, gap: 34 });
-  wrap(p.abstract, 92).forEach((l, i) => segs.push({ text: l, size: 11, gap: i === 0 ? 18 : 15 }));
-  segs.push({
-    text: "This is an automatically generated sample manuscript for demonstration.",
-    size: 9,
-    gap: 28,
-  });
-
-  let stream = "BT\n/F1 16 Tf\n72 740 Td\n";
-  for (const seg of segs) {
-    stream += `/F1 ${seg.size} Tf\n`;
-    stream += `0 -${seg.gap} Td\n`;
-    stream += `(${escapePdf(seg.text)}) Tj\n`;
-  }
-  stream += "ET";
-
+function unavailablePdf(message = "PDF is not available to view."): Buffer {
+  const stream = `BT\n/F1 20 Tf\n110 430 Td\n(${escapePdf(message)}) Tj\nET`;
   const streamLen = Buffer.byteLength(stream, "latin1");
   const offsets: number[] = [];
   let pdf = "%PDF-1.4\n";
@@ -136,7 +93,7 @@ const PREPRINTS: Seed[] = [
     keywords: "tropical glaciers, mass balance, remote sensing, Andes",
     license: "CC BY 4.0",
     abstract:
-      "We combine two decades of optical and radar satellite observations to quantify ice loss across the tropical Andes. Our analysis reveals a marked acceleration in mass loss after 2012, concentrated at lower elevations where seasonal snow cover has declined. We attribute the trend primarily to rising freezing levels and discuss implications for downstream water availability in the dry season.",
+      "Tropical Andean glaciers are among the most climatically sensitive ice masses on Earth, yet observational constraints on their recent evolution remain limited. We integrate two decades of optical and synthetic-aperture radar observations to quantify glacier-wide mass change across the tropical Andes. The reconstruction reveals a pronounced acceleration in mass loss after 2012, most acute at lower elevations where the duration of seasonal snow cover has declined. We attribute this trend principally to rising regional freezing levels and assess its consequences for dry-season water security in downstream Andean communities.",
     by: "reyes",
     publishedAt: "2025-02-14",
   },
@@ -147,7 +104,7 @@ const PREPRINTS: Seed[] = [
     keywords: "seismic hazard, Bayesian inference, intraplate earthquakes",
     license: "CC BY 4.0",
     abstract:
-      "Estimating earthquake hazard in stable continental regions is hampered by short instrumental catalogs and long recurrence intervals. We present a hierarchical Bayesian model that pools paleoseismic, geodetic, and historical data to constrain recurrence parameters with explicit uncertainty. Application to three intraplate provinces shows that ignoring epistemic uncertainty can underestimate hazard at long return periods by up to forty percent.",
+      "Probabilistic seismic hazard assessment in stable continental interiors is fundamentally constrained by short instrumental catalogues and recurrence intervals that span millennia. We develop a hierarchical Bayesian framework that jointly assimilates paleoseismic, geodetic, and historical observations to constrain earthquake recurrence parameters while propagating epistemic uncertainty explicitly. Applied to three intraplate provinces, the model demonstrates that neglecting epistemic uncertainty can underestimate hazard at long return periods by as much as forty percent, with direct implications for the design of critical infrastructure.",
     by: "vasquez",
     publishedAt: "2025-03-03",
   },
@@ -158,7 +115,7 @@ const PREPRINTS: Seed[] = [
     keywords: "soil carbon, regenerative agriculture, grazing, sequestration",
     license: "CC BY-SA 4.0",
     abstract:
-      "We report results from a replicated field experiment comparing continuous and rotational grazing on semi-arid grassland. Rotational grazing increased mineral-associated organic carbon in the upper thirty centimeters without reducing forage yield. Isotopic tracing indicates that gains were driven by enhanced root turnover rather than surface litter inputs, suggesting management can meaningfully influence stable carbon pools.",
+      "Whether grazing management can durably enhance soil carbon storage remains contested. We report a three-year replicated field experiment contrasting continuous and rotational grazing on semi-arid grassland. Rotational grazing significantly increased mineral-associated organic carbon within the upper thirty centimetres of soil without compromising forage productivity. Stable-isotope tracing indicates that these gains were driven by enhanced root turnover rather than aboveground litter inputs, suggesting that targeted management can meaningfully augment stable, long-lived carbon pools.",
     by: "okeke",
     publishedAt: "2025-03-27",
   },
@@ -169,7 +126,7 @@ const PREPRINTS: Seed[] = [
     keywords: "microplastics, marine pollution, sediment traps, ocean transport",
     license: "CC BY 4.0",
     abstract:
-      "The fate of buoyant plastics in the open ocean remains poorly constrained. Using moored sediment traps deployed across a subtropical gyre, we document a persistent downward flux of microplastic particles associated with biological aggregates. Particle size and polymer type strongly influence sinking rates, implying that surface surveys substantially underestimate the total plastic inventory of the water column.",
+      "The vertical fate of buoyant plastics in the open ocean remains poorly quantified, limiting global inventories of marine plastic pollution. Using moored sediment-trap arrays deployed across a subtropical gyre, we document a persistent downward flux of microplastic particles mediated by biological aggregation. Particle size and polymer composition exert strong control on sinking velocity, implying that surface-based surveys systematically underestimate the total plastic burden of the water column and its potential for long-term sequestration at depth.",
     by: "tanaka",
     publishedAt: "2025-04-19",
   },
@@ -180,7 +137,7 @@ const PREPRINTS: Seed[] = [
     keywords: "paleoclimate, speleothem, monsoon, Holocene",
     license: "CC BY 4.0",
     abstract:
-      "We present a precisely dated stalagmite oxygen isotope record spanning the past eleven thousand years. The record captures centennial-scale weakening of monsoon rainfall coincident with North Atlantic cooling events. Spectral analysis highlights a persistent solar influence on monsoon strength, providing context for interpreting recent rainfall variability against natural background dynamics.",
+      "Reconstructing the natural range of monsoon variability is essential for contextualising contemporary rainfall trends. We present a precisely uranium-thorium-dated stalagmite oxygen-isotope record resolving monsoon intensity over the past eleven thousand years. The record documents recurrent centennial-scale weakening of monsoon rainfall coincident with North Atlantic cooling episodes, while spectral analysis reveals a persistent solar influence on monsoon strength. These results provide a robust baseline against which recent hydroclimatic variability can be evaluated.",
     by: "nair",
     publishedAt: "2025-05-08",
   },
@@ -191,7 +148,7 @@ const PREPRINTS: Seed[] = [
     keywords: "urban heat island, heatwaves, drought, climate adaptation",
     license: "CC BY 4.0",
     abstract:
-      "Compound hot and dry extremes are becoming more frequent, yet their joint effect on urban climates is rarely quantified. Using a network of municipal sensors and reanalysis data, we show that nighttime heat island intensity nearly doubles when heatwaves coincide with soil moisture deficits. We outline implications for early-warning systems and the siting of urban green infrastructure.",
+      "Compound hot and dry extremes are intensifying under climate change, yet their combined influence on urban thermal environments remains poorly characterised. Drawing on a dense municipal sensor network and atmospheric reanalysis, we show that nighttime urban heat-island intensity nearly doubles when heatwaves coincide with pronounced soil-moisture deficits. We examine the implications of this amplification for heat early-warning systems and for the strategic siting of urban green infrastructure.",
     by: "oconnor",
     publishedAt: "2025-06-22",
   },
@@ -202,7 +159,7 @@ const PREPRINTS: Seed[] = [
     keywords: "melt inclusions, arc magmatism, trace elements, partitioning",
     license: "CC BY 4.0",
     abstract:
-      "Melt inclusions preserve information about magmatic processes lost in bulk rock samples. We analyze a suite of olivine-hosted inclusions from a continental arc to derive updated partition coefficients for fluid-mobile elements. The results imply a larger slab-fluid contribution to arc magmas than previously inferred and refine estimates of volatile recycling at convergent margins.",
+      "Olivine-hosted melt inclusions preserve primary magmatic signatures that are otherwise lost during bulk-rock homogenisation. We analyse a suite of inclusions from a continental volcanic arc to derive revised partition coefficients for fluid-mobile trace elements. The results imply a substantially larger slab-derived fluid contribution to arc magmatism than previously recognised and refine quantitative estimates of volatile recycling at convergent plate margins.",
     by: "vasquez",
     publishedAt: "2025-07-11",
   },
@@ -213,7 +170,7 @@ const PREPRINTS: Seed[] = [
     keywords: "wetlands, deep learning, land cover change, coastal",
     license: "CC BY 4.0",
     abstract:
-      "We train a convolutional segmentation model to classify coastal wetland extent across four decades of medium-resolution imagery. The approach resolves gradual conversion that thresholding methods miss, revealing accelerating losses adjacent to expanding aquaculture. We release the labeled training set to support reproducible monitoring of vulnerable coastal ecosystems.",
+      "Accurate monitoring of coastal wetland extent is hindered by gradual, sub-pixel land-cover transitions that conventional classification methods fail to capture. We train a convolutional segmentation model to map wetland extent across four decades of medium-resolution satellite imagery. The approach resolves incremental conversion adjacent to expanding aquaculture and reveals accelerating wetland loss. We release the annotated training dataset to support reproducible, large-scale monitoring of vulnerable coastal ecosystems.",
     by: "okeke",
     publishedAt: "2025-08-05",
   },
@@ -224,7 +181,7 @@ const PREPRINTS: Seed[] = [
     keywords: "nitrate export, connectivity, catchment hydrology, water quality",
     license: "CC BY 4.0",
     abstract:
-      "Nutrient delivery from agricultural catchments varies sharply with hydrological state. Through high-frequency stream chemistry monitoring, we show that nitrate export is governed by the activation of subsurface flow paths during wet periods. A simple connectivity index explains most of the variance in load, offering a practical basis for targeting mitigation measures.",
+      "Nutrient export from agricultural catchments varies sharply with hydrological state, complicating efforts to manage downstream water quality. Using high-frequency in-stream chemistry, we demonstrate that nitrate export is governed by the activation of subsurface flow paths during wet periods. A parsimonious hydrological connectivity index accounts for the majority of variance in nitrate load, offering a practical and transferable basis for targeting mitigation measures.",
     by: "reyes",
     publishedAt: "2025-09-16",
   },
@@ -235,7 +192,7 @@ const PREPRINTS: Seed[] = [
     keywords: "InSAR, volcano deformation, eruption forecasting",
     license: "CC BY 4.0",
     abstract:
-      "We analyze a multi-year interferometric time series spanning two eruptive episodes at an active stratovolcano. Subtle inflation preceding each episode localizes a shallow storage region, while co-eruptive subsidence constrains the volume of erupted material. The consistency of the signal suggests deformation monitoring can provide weeks of advance warning at similar systems.",
+      "Forecasting eruptions at persistently active volcanoes requires robust links between surface deformation and subsurface magmatic processes. We analyse a multi-year interferometric synthetic-aperture radar time series spanning two eruptive episodes at an active stratovolcano. Subtle pre-eruptive inflation localises a shallow magma storage region, while co-eruptive subsidence constrains erupted volumes. The reproducibility of these signals indicates that deformation monitoring can provide several weeks of advance warning at comparable systems.",
     by: "tanaka",
     publishedAt: "2025-10-02",
   },
@@ -246,7 +203,7 @@ const PREPRINTS: Seed[] = [
     keywords: "permafrost, carbon feedback, thaw, greenhouse gases",
     license: "CC BY 4.0",
     abstract:
-      "Thawing permafrost may release large quantities of stored carbon, but flux estimates remain uncertain. We combine incubation experiments with field flux measurements along a natural thaw gradient to partition carbon loss between carbon dioxide and methane. Our results indicate that landscape wetness, more than temperature alone, determines the climatic impact of released carbon.",
+      "Thawing permafrost represents one of the largest and least constrained feedbacks in the global carbon cycle. We combine controlled incubation experiments with in-situ flux measurements along a natural thaw gradient to partition carbon release between carbon dioxide and methane. Our results indicate that landscape moisture, rather than temperature alone, exerts dominant control over the climatic impact of mobilised permafrost carbon, with direct implications for Earth-system model projections.",
     by: "nair",
     publishedAt: "2025-10-28",
   },
@@ -257,7 +214,7 @@ const PREPRINTS: Seed[] = [
     keywords: "landslides, rainfall thresholds, susceptibility, hazard mapping",
     license: "CC BY 4.0",
     abstract:
-      "Rainfall-triggered landslides threaten mountain communities, and their frequency may shift with the intensification of extreme precipitation. We integrate an inventory of past failures with downscaled rainfall projections to map evolving susceptibility. Areas of greatest concern coincide with recent deforestation, underscoring the compounding role of land-use change in hazard exposure.",
+      "Rainfall-triggered landslides pose an escalating threat to mountain communities as extreme precipitation intensifies. We integrate a multi-decadal inventory of slope failures with statistically downscaled rainfall projections to map evolving landslide susceptibility across a mountainous region. Zones of greatest projected hazard coincide spatially with recent deforestation, underscoring the compounding role of land-use change in shaping future exposure.",
     by: "oconnor",
     publishedAt: "2025-11-19",
   },
@@ -268,7 +225,7 @@ const PREPRINTS: Seed[] = [
     keywords: "weathering, karst, carbon cycle, alkalinity",
     license: "CC BY 4.0",
     abstract:
-      "Chemical weathering of carbonate rock both consumes and releases carbon dioxide depending on timescale and hydrology. Using paired discharge and alkalinity measurements, we quantify the net carbon exchange of a temperate karst basin. We find pronounced seasonal reversal in the direction of exchange, cautioning against annual-average treatments in regional carbon assessments.",
+      "Carbonate weathering both consumes and releases carbon dioxide depending on timescale and hydrological conditions, complicating its representation in regional carbon budgets. Using paired high-frequency discharge and alkalinity measurements, we quantify the net carbon exchange of a temperate karst catchment. We identify a pronounced seasonal reversal in the direction of exchange, cautioning against the use of annual-mean approximations in regional carbon assessments.",
     by: "vasquez",
     publishedAt: "2025-12-09",
   },
@@ -281,7 +238,7 @@ const PREPRINTS: Seed[] = [
     keywords: "marine heatwaves, coral reefs, ecosystem resilience",
     license: "CC BY 4.0",
     abstract:
-      "Recurrent marine heatwaves are reshaping reef ecosystems faster than recovery can occur. Synthesizing five years of survey data across a thermal stress gradient, we document a shift toward heat-tolerant but structurally simpler coral assemblages. The trajectory implies declining habitat complexity even where total coral cover is partially maintained.",
+      "Recurrent marine heatwaves are restructuring coral reef ecosystems more rapidly than recovery can proceed. Synthesising five years of survey data along a thermal-stress gradient, we document a directional shift toward heat-tolerant but structurally simplified coral assemblages. This trajectory implies a progressive decline in habitat complexity and associated ecosystem function, even where total coral cover is partially sustained.",
     by: "tanaka",
     publishedAt: "2026-01-21",
   },
@@ -292,7 +249,7 @@ const PREPRINTS: Seed[] = [
     keywords: "machine learning, downscaling, regional climate, emulators",
     license: "CC BY 4.0",
     abstract:
-      "Dynamical downscaling provides detailed regional climate information at high computational cost. We develop a neural emulator trained on a limited ensemble of regional simulations that reproduces precipitation and temperature fields at a fraction of the cost. Validation against held-out scenarios shows the emulator preserves extreme-event statistics, enabling large ensembles for risk assessment.",
+      "Dynamical downscaling delivers detailed regional climate information but at prohibitive computational expense. We develop a deep-learning emulator, trained on a limited ensemble of high-resolution regional simulations, that reproduces precipitation and temperature fields at a small fraction of the cost. Validation against withheld scenarios confirms that the emulator preserves extreme-event statistics, enabling the large ensembles required for robust climate-risk assessment.",
     by: "nair",
     publishedAt: "2026-02-13",
   },
@@ -303,7 +260,7 @@ const PREPRINTS: Seed[] = [
     keywords: "induced seismicity, fluid injection, fault reactivation",
     license: "CC BY 4.0",
     abstract:
-      "Subsurface fluid injection can reactivate pre-existing faults and induce seismicity. We couple geomechanical modeling with basin stress observations to assess reactivation potential across a range of injection scenarios. The analysis identifies critically stressed orientations and proposes operational thresholds that substantially reduce modeled seismic risk.",
+      "Subsurface fluid injection can reactivate pre-existing faults and induce seismicity, posing a persistent challenge for subsurface energy operations. We couple geomechanical modelling with in-situ basin stress observations to evaluate fault-reactivation potential across a range of injection scenarios. The analysis identifies critically stressed fault orientations and proposes operational pressure thresholds that substantially reduce modelled seismic risk.",
     by: "vasquez",
     publishedAt: "2026-03-04",
   },
@@ -314,7 +271,7 @@ const PREPRINTS: Seed[] = [
     keywords: "aerosols, clouds, Southern Ocean, radiative forcing",
     license: "CC BY 4.0",
     abstract:
-      "The Southern Ocean hosts some of the most persistent and least understood cloud cover on Earth. Using measurements from a research cruise, we characterize how natural marine aerosols modulate cloud droplet number and brightness. Our observations help explain long-standing biases in climate models and constrain the regional radiative effect of these clouds.",
+      "The Southern Ocean sustains some of the most extensive and least understood cloud cover on Earth, and persistent model biases in this region limit confidence in climate projections. Using in-situ measurements from a research cruise, we characterise the influence of natural marine aerosols on cloud droplet number concentration and albedo. These observations help to explain long-standing radiative biases and better constrain the regional cloud radiative effect.",
     by: "reyes",
     publishedAt: "2026-03-29",
   },
@@ -325,7 +282,7 @@ const PREPRINTS: Seed[] = [
     keywords: "groundwater, subsidence, deltas, InSAR",
     license: "CC BY 4.0",
     abstract:
-      "Excessive groundwater withdrawal drives land subsidence that compounds relative sea-level rise in low-lying deltas. Combining satellite geodesy with piezometric records, we map subsidence rates and link them to aquifer compaction. We show that managed recharge in targeted zones could halve projected subsidence over the coming decades.",
+      "Excessive groundwater extraction drives land subsidence that compounds relative sea-level rise across low-lying, rapidly urbanising deltas. Combining satellite geodesy with piezometric records, we map subsidence rates and attribute them to aquifer compaction. Scenario analysis indicates that managed aquifer recharge in targeted zones could halve projected subsidence over the coming decades, informing sustainable groundwater governance.",
     by: "okeke",
     publishedAt: "2026-04-22",
   },
@@ -336,7 +293,7 @@ const PREPRINTS: Seed[] = [
     keywords: "adaptation finance, climate policy, equity, governance",
     license: "CC BY-NC 4.0",
     abstract:
-      "Adaptation finance is rising, yet its distribution rarely matches where climate vulnerability is greatest. We analyze funding flows across thirty countries to evaluate how allocation criteria align with measured exposure and adaptive capacity. The findings reveal systematic gaps and motivate transparent, needs-based allocation frameworks for international climate funds.",
+      "Climate adaptation finance is expanding rapidly, yet its allocation frequently diverges from where vulnerability is most acute. We analyse adaptation funding flows across thirty countries to assess the alignment between allocation criteria and measured exposure and adaptive capacity. The analysis reveals systematic distributional gaps and motivates the adoption of transparent, needs-based frameworks for the equitable allocation of international climate funds.",
     by: "oconnor",
     publishedAt: "2026-05-30",
   },
@@ -364,29 +321,35 @@ async function main() {
   }
 
   let created = 0;
-  let skipped = 0;
+  let updated = 0;
 
   for (const [i, p] of PREPRINTS.entries()) {
     const slug = slugify(p.title);
+    const pdf = unavailablePdf();
     const existing = await prisma.preprint.findUnique({ where: { slug } });
+
     if (existing) {
-      // Demo rows seeded before the isSample flag existed default to false,
-      // which would leave their placeholder PDFs viewable. Repair them so
-      // re-running this seed always enforces the sample flag.
-      if (!existing.isSample) {
-        await prisma.preprint.update({
-          where: { id: existing.id },
-          data: { isSample: true },
-        });
-      }
-      skipped += 1;
+      // Refresh demo rows: rewrite the placeholder PDF, update the (now more
+      // polished) abstract, and ensure the sample flag is set.
+      await fs.writeFile(path.join(uploadRoot(), existing.fileStoredName), pdf);
+      await prisma.preprint.update({
+        where: { id: existing.id },
+        data: {
+          abstract: p.abstract,
+          keywords: p.keywords,
+          license: p.license,
+          isSample: true,
+          fileMime: "application/pdf",
+          fileSize: pdf.length,
+        },
+      });
+      updated += 1;
       continue;
     }
 
     const published = new Date(`${p.publishedAt}T10:00:00.000Z`);
     const createdAt = new Date(published.getTime() - 4 * 24 * 60 * 60 * 1000);
 
-    const pdf = makePdf(p);
     const storedName = `${slug}-${published.getTime()}-${i}.pdf`;
     await fs.writeFile(path.join(uploadRoot(), storedName), pdf);
 
@@ -415,7 +378,7 @@ async function main() {
     created += 1;
   }
 
-  console.log(`Sample preprints: created ${created}, skipped ${skipped} (already present).`);
+  console.log(`Sample preprints: created ${created}, updated ${updated}.`);
 }
 
 main()
