@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
@@ -84,9 +85,19 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       </div>
 
       <div>
-        <label className="label" htmlFor="password">
-          Password
-        </label>
+        <div className="flex items-baseline justify-between">
+          <label className="label" htmlFor="password">
+            Password
+          </label>
+          {mode === "login" && (
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-terra-700 hover:text-terra-800"
+            >
+              Forgot password?
+            </Link>
+          )}
+        </div>
         <input
           id="password"
           name="password"
@@ -100,6 +111,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           <p className="mt-1 text-xs text-stone-500">At least 8 characters.</p>
         )}
       </div>
+
+      {mode === "register" && <TurnstileWidget />}
 
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading

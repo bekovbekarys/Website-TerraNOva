@@ -65,6 +65,16 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/privacy" className="hover:text-terra-700">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="hover:text-terra-700">
+                Terms of Use
+              </Link>
+            </li>
+            <li>
               <Link href="/about#contact" className="hover:text-terra-700">
                 Contact
               </Link>

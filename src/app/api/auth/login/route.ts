@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { setSessionCookie } from "@/lib/session";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   email: z.string().trim().toLowerCase().email(),
@@ -10,6 +11,15 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = clientIp(req);
+  const limit = rateLimit(`login:${ip}`, 10, 5 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();

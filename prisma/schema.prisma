@@ -19,6 +19,19 @@ model User {
 
   preprints    Preprint[] @relation("AuthorSubmissions")
   reviewed     Preprint[] @relation("Moderator")
+  resetTokens  PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique // sha-256 of the emailed token; the raw token is never stored
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Preprint {

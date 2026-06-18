@@ -26,8 +26,16 @@ export default async function RegisterPage() {
           <AuthForm mode="register" />
         </div>
         <p className="mt-6 text-center text-xs text-stone-500">
-          By creating an account you agree to post only scholarly work for which
-          you hold the rights to share.
+          By creating an account you agree to our{" "}
+          <Link href="/terms" className="font-medium text-terra-700">
+            Terms of Use
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="font-medium text-terra-700">
+            Privacy Policy
+          </Link>
+          , and to post only scholarly work for which you hold the rights to
+          share.
         </p>
       </div>
     </div>

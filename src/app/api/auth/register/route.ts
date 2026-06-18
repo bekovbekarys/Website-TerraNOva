@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { setSessionCookie, isAdminEmail } from "@/lib/session";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your full name.").max(120),
@@ -12,11 +14,28 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
-  let body: unknown;
+  const ip = clientIp(req);
+  const limit = rateLimit(`register:${ip}`, 5, 60 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many sign-up attempts. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
+  let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  const captchaOk = await verifyTurnstile(body["cf-turnstile-response"], ip);
+  if (!captchaOk) {
+    return NextResponse.json(
+      { error: "Captcha verification failed. Please try again." },
+      { status: 400 }
+    );
   }
 
   const parsed = schema.safeParse(body);
