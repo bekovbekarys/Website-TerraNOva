@@ -55,15 +55,7 @@ npm run dev                 # development at http://localhost:3000
 npm run build && npm start
 ```
 
-## Becoming a moderator
 
-There are two ways the moderator (admin) account is established:
-
-1. **Seeding** — `npm run db:seed` creates an account for `ADMIN_EMAIL` with a
-   default password (`TerraNovaAdmin!`, or `ADMIN_PASSWORD` if set). Sign in and
-   change the password from **Account settings**.
-2. **Registration** — anyone who registers with the email that matches
-   `ADMIN_EMAIL` is automatically granted the moderator role.
 
 Once signed in as the moderator, open the **Moderation dashboard** from the user
 menu (or visit `/admin`) to review, publish, and reject submissions.
