@@ -19,7 +19,8 @@ export function PreprintCard({ preprint }: { preprint: CardPreprint }) {
       : authors.join(", ");
 
   return (
-    <article className="card group p-5 transition hover:border-terra-300 hover:shadow-md">
+    <article className="card group relative flex flex-col overflow-hidden p-5 transition duration-300 hover:-translate-y-1 hover:border-terra-300 hover:shadow-md">
+      <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-terra-500 to-ocean-400 transition-transform duration-300 group-hover:scale-x-100" />
       <div className="flex items-center gap-2 text-xs">
         <Link
           href={`/browse?subject=${encodeURIComponent(preprint.subject)}`}
@@ -43,13 +44,13 @@ export function PreprintCard({ preprint }: { preprint: CardPreprint }) {
 
       <p className="mt-1.5 text-sm font-medium text-stone-600">{shownAuthors}</p>
 
-      <p className="mt-2 text-sm leading-relaxed text-stone-500">
+      <p className="mt-2 flex-1 text-sm leading-relaxed text-stone-500">
         {truncate(preprint.abstract, 240)}
       </p>
 
       <Link
         href={`/preprint/${preprint.slug}`}
-        className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-terra-700 hover:gap-2 hover:text-terra-800"
+        className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-terra-700 transition-all hover:gap-2 hover:text-terra-800"
       >
         Read preprint →
       </Link>

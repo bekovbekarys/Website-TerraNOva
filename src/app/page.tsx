@@ -6,7 +6,7 @@ import { SUBJECTS, SITE_TAGLINE } from "@/lib/constants";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [recent, total, subjectCounts] = await Promise.all([
+  const [recent, total, subjectCounts, downloadAgg] = await Promise.all([
     prisma.preprint.findMany({
       where: { status: "PUBLISHED" },
       orderBy: { publishedAt: "desc" },
@@ -27,65 +27,118 @@ export default async function HomePage() {
       where: { status: "PUBLISHED" },
       _count: { subject: true },
     }),
+    prisma.preprint.aggregate({
+      where: { status: "PUBLISHED" },
+      _sum: { downloads: true },
+    }),
   ]);
 
   const countBySubject = new Map(
     subjectCounts.map((s) => [s.subject, s._count.subject])
   );
+  const activeSubjects = subjectCounts.length;
+  const totalDownloads = downloadAgg._sum.downloads ?? 0;
+
+  const stats = [
+    { value: total.toLocaleString(), label: "Preprints published" },
+    { value: activeSubjects.toLocaleString(), label: "Active subject areas" },
+    { value: totalDownloads.toLocaleString(), label: "Total downloads" },
+    { value: "Free", label: "Forever, for everyone" },
+  ];
 
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-terra-800 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-terra-900 via-terra-800 to-terra-950 text-white">
+        {/* Drifting colour wash */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-30 [animation:drift_18s_ease-in-out_infinite]"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 20% 30%, #54ad7f 0, transparent 40%), radial-gradient(circle at 80% 20%, #1aa6ff 0, transparent 35%), radial-gradient(circle at 60% 90%, #8acca8 0, transparent 40%)",
+              "radial-gradient(circle at 18% 28%, #54ad7f 0, transparent 42%), radial-gradient(circle at 82% 18%, #1aa6ff 0, transparent 38%), radial-gradient(circle at 65% 95%, #8acca8 0, transparent 45%)",
           }}
         />
+        {/* Glowing globe motif */}
+        <div className="pointer-events-none absolute -right-24 top-1/2 hidden h-[34rem] w-[34rem] -translate-y-1/2 rounded-full bg-gradient-to-tr from-ocean-500/30 to-terra-300/20 blur-2xl lg:block" />
+        <div className="pointer-events-none absolute -right-10 top-1/2 hidden h-96 w-96 -translate-y-1/2 rounded-full border border-white/10 lg:block">
+          <div className="absolute inset-8 rounded-full border border-white/10" />
+          <div className="absolute inset-20 rounded-full border border-white/10" />
+        </div>
+        {/* Subtle grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+            backgroundSize: "44px 44px",
+          }}
+        />
+
         <div className="container-page relative py-20 sm:py-28">
-          <div className="max-w-3xl">
-            <span className="badge bg-white/15 text-terra-50 ring-1 ring-inset ring-white/20">
+          <div className="max-w-3xl animate-fade-up">
+            <span className="badge bg-white/10 text-terra-50 ring-1 ring-inset ring-white/20 backdrop-blur">
               Free · Open access · Community-led
             </span>
-            <h1 className="mt-5 font-serif text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 font-serif text-4xl font-bold leading-[1.05] text-white sm:text-5xl lg:text-6xl">
               Share your Earth science research, the moment it&apos;s ready.
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-terra-50/90">
               {SITE_TAGLINE}. Post a preprint, reach readers worldwide, and
               establish priority for your work, with no fees and no paywalls.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/submit" className="btn bg-white text-terra-800 hover:bg-terra-50">
+
+            {/* Hero search */}
+            <form
+              action="/browse"
+              method="get"
+              className="mt-8 flex max-w-xl flex-col gap-2 sm:flex-row"
+            >
+              <input
+                type="search"
+                name="q"
+                placeholder="Search titles, authors, abstracts, keywords…"
+                className="input border-transparent bg-white/95 shadow-lg"
+                aria-label="Search preprints"
+              />
+              <button
+                type="submit"
+                className="btn shrink-0 bg-white text-terra-800 hover:bg-terra-50"
+              >
+                Search
+              </button>
+            </form>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/submit"
+                className="btn bg-ocean-400 text-white shadow-lg shadow-ocean-900/30 hover:bg-ocean-300"
+              >
                 Submit a preprint
               </Link>
               <Link
                 href="/browse"
-                className="btn border border-white/30 bg-transparent text-white hover:bg-white/10"
+                className="btn border border-white/25 bg-white/5 text-white backdrop-blur hover:bg-white/10"
               >
-                Browse {total > 0 ? `${total} ` : ""}preprints
+                Browse {total > 0 ? `${total} ` : ""}preprints →
               </Link>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Search bar */}
-      <section className="border-b border-stone-200 bg-white">
-        <div className="container-page py-6">
-          <form action="/browse" method="get" className="flex gap-2">
-            <input
-              type="search"
-              name="q"
-              placeholder="Search titles, authors, abstracts, keywords…"
-              className="input"
-              aria-label="Search preprints"
-            />
-            <button type="submit" className="btn-primary shrink-0">
-              Search
-            </button>
-          </form>
+        {/* Stats strip */}
+        <div className="relative border-t border-white/10 bg-black/10 backdrop-blur">
+          <div className="container-page grid grid-cols-2 divide-x divide-white/10 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label} className="px-2 py-5 text-center sm:py-6">
+                <p className="font-serif text-2xl font-bold text-white sm:text-3xl">
+                  {s.value}
+                </p>
+                <p className="mt-1 text-xs text-terra-100/80 sm:text-sm">
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -139,12 +192,15 @@ export default async function HomePage() {
               <Link
                 key={subject}
                 href={`/browse?subject=${encodeURIComponent(subject)}`}
-                className="card flex items-center justify-between px-4 py-3 transition hover:border-terra-300 hover:shadow-md"
+                className="group card flex items-center justify-between gap-2 px-4 py-3 transition hover:-translate-y-0.5 hover:border-terra-300 hover:shadow-md"
               >
-                <span className="text-sm font-medium text-stone-700">
-                  {subject}
+                <span className="flex items-center gap-2.5">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-terra-300 transition group-hover:bg-terra-600" />
+                  <span className="text-sm font-medium text-stone-700 group-hover:text-terra-800">
+                    {subject}
+                  </span>
                 </span>
-                <span className="badge bg-stone-100 text-stone-500">
+                <span className="badge bg-stone-100 text-stone-500 group-hover:bg-terra-100 group-hover:text-terra-700">
                   {countBySubject.get(subject) ?? 0}
                 </span>
               </Link>
@@ -155,28 +211,70 @@ export default async function HomePage() {
 
       {/* How it works */}
       <section className="container-page py-16">
-        <h2 className="text-center text-2xl font-bold">How TerraNova works</h2>
-        <div className="mt-10 grid gap-8 md:grid-cols-3">
+        <div className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-terra-700">
+            Simple by design
+          </p>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
+            How TerraNova works
+          </h2>
+        </div>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
             {
               step: "1",
               title: "Submit your manuscript",
               body: "Create an account and upload your PDF with a title, abstract, authors, and subject area. It takes a few minutes.",
+              icon: (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+                />
+              ),
             },
             {
               step: "2",
               title: "Quick moderation check",
               body: "A moderator screens each submission to confirm it is scholarly Earth-science work. This checks suitability, not scientific judgement.",
+              icon: (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              ),
             },
             {
               step: "3",
               title: "Published & citable",
               body: "Once accepted, your preprint goes live with a permanent link, ready to be read, downloaded, and cited worldwide.",
+              icon: (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.96 8.96 0 0 0 3.5-.7M12 3a8.96 8.96 0 0 1 0 18M3.6 9h16.8M3.6 15h16.8"
+                />
+              ),
             },
           ].map((item) => (
-            <div key={item.step} className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-terra-100 font-serif text-xl font-bold text-terra-700">
+            <div
+              key={item.step}
+              className="card relative p-6 transition hover:-translate-y-1 hover:shadow-md"
+            >
+              <span className="absolute right-5 top-4 font-serif text-5xl font-bold text-stone-100">
                 {item.step}
+              </span>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-terra-100 text-terra-700">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.6}
+                  stroke="currentColor"
+                >
+                  {item.icon}
+                </svg>
               </div>
               <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-stone-600">
@@ -184,6 +282,42 @@ export default async function HomePage() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Closing CTA */}
+      <section className="container-page pb-20">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-terra-700 to-terra-900 px-6 py-14 text-center text-white sm:px-12">
+          <div
+            className="absolute inset-0 opacity-25"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 15% 20%, #54ad7f 0, transparent 40%), radial-gradient(circle at 85% 80%, #1aa6ff 0, transparent 40%)",
+            }}
+          />
+          <div className="relative mx-auto max-w-2xl">
+            <h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">
+              Ready to share your research?
+            </h2>
+            <p className="mt-3 text-lg text-terra-50/90">
+              Join the community and get your work in front of readers worldwide,
+              free of charge.
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/submit"
+                className="btn bg-white text-terra-800 hover:bg-terra-50"
+              >
+                Submit a preprint
+              </Link>
+              <Link
+                href="/guidelines"
+                className="btn border border-white/25 bg-white/5 text-white hover:bg-white/10"
+              >
+                Read the guidelines
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </>
