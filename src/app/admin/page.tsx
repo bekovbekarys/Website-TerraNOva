@@ -130,14 +130,20 @@ export default async function AdminPage({
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                <a
-                  href={`/api/files/${p.slug}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-sm font-semibold text-terra-700 hover:text-terra-800"
-                >
-                  Open PDF →
-                </a>
+                {p.isSample ? (
+                  <span className="text-sm font-semibold text-stone-400">
+                    Sample entry — no PDF
+                  </span>
+                ) : (
+                  <a
+                    href={`/api/files/${p.slug}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="text-sm font-semibold text-terra-700 hover:text-terra-800"
+                  >
+                    Open PDF →
+                  </a>
+                )}
               </div>
 
               {p.moderationNote && (

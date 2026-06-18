@@ -396,6 +396,7 @@ async function main() {
         fileMime: "application/pdf",
         fileSize: pdf.length,
         status: "PUBLISHED",
+        isSample: true,
         submittedById: personaIds[p.by],
         publishedAt: published,
         createdAt,

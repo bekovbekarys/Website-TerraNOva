@@ -12,6 +12,7 @@ export async function GET(
     select: {
       id: true,
       status: true,
+      isSample: true,
       submittedById: true,
       fileStoredName: true,
       fileOriginalName: true,
@@ -21,6 +22,15 @@ export async function GET(
 
   if (!preprint) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+
+  // Sample/demonstration preprints carry placeholder files and are not
+  // meant to be opened or downloaded.
+  if (preprint.isSample) {
+    return NextResponse.json(
+      { error: "This is a demonstration preprint; its PDF is not available." },
+      { status: 403 }
+    );
   }
 
   // Published files are public. Non-published files are visible only to the

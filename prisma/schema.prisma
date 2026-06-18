@@ -43,6 +43,10 @@ model Preprint {
   moderationNote String?
   version        Int      @default(1)
 
+  // Demonstration data: sample preprints have placeholder PDFs and are not
+  // viewable/downloadable. Real submissions leave this false.
+  isSample       Boolean  @default(false)
+
   submittedBy    User     @relation("AuthorSubmissions", fields: [submittedById], references: [id], onDelete: Cascade)
   submittedById  String
 

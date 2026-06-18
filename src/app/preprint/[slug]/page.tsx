@@ -116,12 +116,28 @@ export default async function PreprintPage({
 
       {/* Actions */}
       <div className="mt-6 flex flex-wrap gap-3">
-        <a href={fileUrl} target="_blank" rel="noopener" className="btn-primary">
-          View PDF
-        </a>
-        <a href={`${fileUrl}?download=1`} download className="btn-secondary">
-          Download ({formatBytes(preprint.fileSize)})
-        </a>
+        {preprint.isSample ? (
+          <span
+            className="badge bg-stone-100 text-stone-500"
+            title="This is a demonstration entry; no PDF is attached."
+          >
+            Sample entry — PDF not available
+          </span>
+        ) : (
+          <>
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener"
+              className="btn-primary"
+            >
+              View PDF
+            </a>
+            <a href={`${fileUrl}?download=1`} download className="btn-secondary">
+              Download ({formatBytes(preprint.fileSize)})
+            </a>
+          </>
+        )}
         {(isOwner || isAdmin) && (
           <Link
             href={isAdmin ? "/admin" : "/dashboard"}
