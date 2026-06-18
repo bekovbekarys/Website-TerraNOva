@@ -4,7 +4,7 @@ import { SITE_NAME, SUPPORT_FUND } from "@/lib/constants";
 
 export const metadata = {
   title: "Support the Aral Sea",
-  description: `Support the ${SUPPORT_FUND.name} (${SUPPORT_FUND.shortName}) — restoring one of the world's gravest environmental disasters in Central Asia.`,
+  description: `Support the ${SUPPORT_FUND.name} (${SUPPORT_FUND.shortName}): restoring one of the world's gravest environmental disasters in Central Asia.`,
 };
 
 const impactCards = [
@@ -32,7 +32,7 @@ const impactCards = [
   },
   {
     title: "Restoration that works",
-    body: "Coordinated action — like the Kok-Aral dam on the North Aral Sea — has already brought water and fish back to parts of the basin, proving that recovery is possible with sustained support.",
+    body: "Coordinated action, like the Kok-Aral dam on the North Aral Sea, has already brought water and fish back to parts of the basin, proving that recovery is possible with sustained support.",
     icon: (
       <path
         strokeLinecap="round"
@@ -72,7 +72,7 @@ export default function SupportPage() {
                 <strong className="font-semibold text-white">
                   {SUPPORT_FUND.name}
                 </strong>{" "}
-                ({SUPPORT_FUND.shortName}) — the intergovernmental fund leading
+                ({SUPPORT_FUND.shortName}), the intergovernmental fund leading
                 restoration of one of the planet&apos;s most severe human-made
                 environmental disasters.
               </p>
@@ -130,7 +130,7 @@ export default function SupportPage() {
             Science is only the start. Action saves ecosystems.
           </h2>
           <p className="mt-3 text-stone-600">
-            The Aral Sea crisis is a textbook case in environmental science — and
+            The Aral Sea crisis is a textbook case in environmental science, and
             a living one. Supporting the fund turns research and awareness into
             on-the-ground recovery.
           </p>
@@ -176,10 +176,10 @@ export default function SupportPage() {
               ecological consequences of the Aral Sea&apos;s shrinkage.
             </p>
             <p>
-              Its Executive Committee implements basin-wide programmes — improving
-              water management, restoring habitats, and supporting the communities
-              who depend on the basin. Contributions and partnerships help sustain
-              this long-term work.
+              Its Executive Committee implements basin-wide programmes that
+              improve water management, restore habitats, and support the
+              communities who depend on the basin. Contributions and partnerships
+              help sustain this long-term work.
             </p>
             <p className="text-sm text-stone-500">
               {SITE_NAME} is an independent preprint server and is not affiliated

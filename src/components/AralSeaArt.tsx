@@ -1,5 +1,5 @@
 // A self-contained circular vignette of the Aral Sea: shrinking blue water
-// ringed by exposed, cracked seabed — used on the support page and homepage
+// ringed by exposed, cracked seabed, used on the support page and homepage
 // cause section. Pure SVG so it stays crisp at any size with no image requests.
 export function AralSeaArt({ className }: { className?: string }) {
   return (
@@ -57,7 +57,7 @@ export function AralSeaArt({ className }: { className?: string }) {
           <path d="M130 384 L180 366" />
         </g>
 
-        {/* Old shoreline — a ghost ring showing where water used to reach */}
+        {/* Old shoreline: a ghost ring showing where water used to reach */}
         <path
           d="M70 250 C150 210 330 210 410 252 C440 300 440 360 400 408 C320 452 160 452 80 408 C40 360 40 300 70 250 Z"
           fill="none"

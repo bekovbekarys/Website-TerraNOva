@@ -247,8 +247,8 @@ export default async function HomePage() {
                 Support a real environmental cause
               </h2>
               <p className="mt-3 max-w-xl text-stone-600">
-                The science we host studies the Earth — here&apos;s a chance to
-                help heal it. Back the{" "}
+                The science we host studies the Earth, and here&apos;s a chance
+                to help heal it. Back the{" "}
                 <strong className="font-semibold text-stone-800">
                   {SUPPORT_FUND.name}
                 </strong>{" "}
