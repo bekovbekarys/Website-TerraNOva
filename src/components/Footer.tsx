@@ -34,6 +34,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/guidelines" className="hover:text-terra-700">
+                Submission guidelines
+              </Link>
+            </li>
+            <li>
               <Link href="/about" className="hover:text-terra-700">
                 About TerraNova
               </Link>

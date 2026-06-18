@@ -17,6 +17,7 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
 
         <nav className="hidden items-center gap-1 md:flex">
           <NavLink href="/browse">Browse</NavLink>
+          <NavLink href="/guidelines">Guidelines</NavLink>
           <NavLink href="/about">About</NavLink>
           <NavLink href="/submit">Submit</NavLink>
         </nav>

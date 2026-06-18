@@ -54,7 +54,7 @@ export default async function HomePage() {
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-terra-50/90">
               {SITE_TAGLINE}. Post a preprint, reach readers worldwide, and
-              establish priority for your work — no fees, no paywalls.
+              establish priority for your work, with no fees and no paywalls.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/submit" className="btn bg-white text-terra-800 hover:bg-terra-50">
@@ -166,7 +166,7 @@ export default async function HomePage() {
             {
               step: "2",
               title: "Quick moderation check",
-              body: "A moderator screens each submission to confirm it is scholarly Earth-science work — not for scientific judgement, just suitability.",
+              body: "A moderator screens each submission to confirm it is scholarly Earth-science work. This checks suitability, not scientific judgement.",
             },
             {
               step: "3",

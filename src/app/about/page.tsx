@@ -12,7 +12,7 @@ export default function AboutPage() {
       <div className="prose-abstract mt-8 space-y-6 text-stone-700">
         <p>
           {SITE_NAME} is a free, open repository where researchers can share
-          preprints — complete manuscripts posted before, or alongside, formal
+          preprints: complete manuscripts posted before, or alongside, formal
           peer review. Posting a preprint lets you share findings quickly,
           establish priority, gather feedback, and make your work openly
           available to anyone, anywhere, at no cost.
@@ -22,7 +22,7 @@ export default function AboutPage() {
           <h2 className="text-xl font-bold">Scope</h2>
           <p className="mt-2">
             We welcome scholarly work across the Earth, planetary, and
-            environmental sciences — from atmospheric science and oceanography to
+            environmental sciences, from atmospheric science and oceanography to
             geology, hydrology, paleontology, natural hazards, and sustainability
             policy. If your work studies the Earth system, it belongs here.
           </p>
@@ -36,7 +36,7 @@ export default function AboutPage() {
             scientific judgement: we confirm that a submission is a scholarly
             manuscript within scope, is not spam or plagiarism, and does not
             contain offensive or non-research material. We do not evaluate the
-            correctness of the science — that is the role of readers and, later,
+            correctness of the science, which is the role of readers and, later,
             peer review.
           </p>
           <p className="mt-2">

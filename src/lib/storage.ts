@@ -15,7 +15,7 @@ export async function ensureUploadDir(): Promise<void> {
 }
 
 export function storedPath(storedName: string): string {
-  // Guard against path traversal — only allow a bare filename.
+  // Guard against path traversal by allowing only a bare filename.
   const safe = path.basename(storedName);
   return path.join(uploadRoot(), safe);
 }

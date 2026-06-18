@@ -16,7 +16,7 @@ export default async function SubmitPage() {
         <h1 className="text-3xl font-bold">Submit a preprint</h1>
         <p className="mt-2 text-stone-600">
           Share your manuscript with the community. Submissions are screened by a
-          moderator for suitability — not scientific judgement — and usually go
+          moderator for suitability (not scientific judgement) and usually go
           live shortly after.
         </p>
       </div>
@@ -27,8 +27,8 @@ export default async function SubmitPage() {
 
       <p className="mt-6 text-sm text-stone-500">
         Need help? See our{" "}
-        <Link href="/about" className="font-semibold text-terra-700">
-          submission guidelines
+        <Link href="/guidelines" className="font-semibold text-terra-700">
+          submission guidelines and preprint template
         </Link>
         .
       </p>

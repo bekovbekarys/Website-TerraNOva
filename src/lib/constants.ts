@@ -2,7 +2,7 @@ export const SITE_NAME = "TerraNova";
 export const SITE_TAGLINE =
   "An open preprint server for the Earth and environmental sciences";
 export const SITE_DESCRIPTION =
-  "TerraNova is a free, community-led repository where researchers share preprints across the Earth, planetary, and environmental sciences — open to read, open to submit.";
+  "TerraNova is a free, community-led repository where researchers share preprints across the Earth, planetary, and environmental sciences. Open to read, open to submit.";
 
 // Subject taxonomy for the Earth & environmental sciences.
 export const SUBJECTS: string[] = [
