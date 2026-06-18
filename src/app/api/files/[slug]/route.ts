@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { readFile } from "@/lib/storage";
+import { isDemoPreprint } from "@/lib/utils";
 
 export async function GET(
   req: Request,
@@ -14,6 +15,7 @@ export async function GET(
       status: true,
       isSample: true,
       submittedById: true,
+      submittedBy: { select: { email: true } },
       fileStoredName: true,
       fileOriginalName: true,
       fileMime: true,
@@ -26,7 +28,7 @@ export async function GET(
 
   // Sample/demonstration preprints carry placeholder files and are not
   // meant to be opened or downloaded.
-  if (preprint.isSample) {
+  if (isDemoPreprint(preprint)) {
     return NextResponse.json(
       { error: "This is a demonstration preprint; its PDF is not available." },
       { status: 403 }

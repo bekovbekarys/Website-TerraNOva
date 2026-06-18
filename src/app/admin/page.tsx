@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ModerationActions } from "@/components/ModerationActions";
-import { formatDate, formatBytes } from "@/lib/utils";
+import { formatDate, formatBytes, isDemoPreprint } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Moderation dashboard" };
@@ -130,7 +130,7 @@ export default async function AdminPage({
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {p.isSample ? (
+                {isDemoPreprint(p) ? (
                   <span className="text-sm font-semibold text-stone-400">
                     Sample entry — no PDF
                   </span>

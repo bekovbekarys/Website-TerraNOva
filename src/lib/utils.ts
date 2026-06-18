@@ -37,3 +37,18 @@ export function authorList(authors: string): string[] {
     .map((a) => a.trim())
     .filter(Boolean);
 }
+
+// Seeded demonstration accounts all use this email domain.
+export const DEMO_EMAIL_DOMAIN = "example.org";
+
+// A preprint counts as a demonstration sample when it is explicitly flagged,
+// or when it was submitted by one of the seeded demo persona accounts. The
+// email fallback means existing demo data is recognized without re-seeding.
+export function isDemoPreprint(p: {
+  isSample?: boolean | null;
+  submittedBy?: { email?: string | null } | null;
+}): boolean {
+  if (p.isSample) return true;
+  const email = p.submittedBy?.email?.toLowerCase() ?? "";
+  return email.endsWith(`@${DEMO_EMAIL_DOMAIN}`);
+}
