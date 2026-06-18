@@ -370,6 +370,15 @@ async function main() {
     const slug = slugify(p.title);
     const existing = await prisma.preprint.findUnique({ where: { slug } });
     if (existing) {
+      // Demo rows seeded before the isSample flag existed default to false,
+      // which would leave their placeholder PDFs viewable. Repair them so
+      // re-running this seed always enforces the sample flag.
+      if (!existing.isSample) {
+        await prisma.preprint.update({
+          where: { id: existing.id },
+          data: { isSample: true },
+        });
+      }
       skipped += 1;
       continue;
     }
