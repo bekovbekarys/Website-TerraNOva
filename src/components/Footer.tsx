@@ -43,6 +43,11 @@ export function Footer() {
                 About TerraNova
               </Link>
             </li>
+            <li>
+              <Link href="/support" className="hover:text-terra-700">
+                Support the Aral Sea
+              </Link>
+            </li>
           </ul>
         </div>
 

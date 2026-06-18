@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { PreprintCard } from "@/components/PreprintCard";
-import { SUBJECTS, SITE_TAGLINE } from "@/lib/constants";
+import { SUBJECTS, SITE_TAGLINE, SUPPORT_FUND } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -205,6 +205,60 @@ export default async function HomePage() {
                 </span>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Support a cause */}
+      <section className="container-page py-14">
+        <div className="relative overflow-hidden rounded-3xl border border-ocean-100 bg-gradient-to-br from-ocean-50 to-terra-50 px-6 py-10 sm:px-10 sm:py-12">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.6fr_1fr]">
+            <div>
+              <span className="badge bg-ocean-100 text-ocean-800">
+                {SUPPORT_FUND.region}
+              </span>
+              <h2 className="mt-3 text-2xl font-bold sm:text-3xl">
+                Support a real environmental cause
+              </h2>
+              <p className="mt-3 max-w-xl text-stone-600">
+                The science we host studies the Earth — here&apos;s a chance to
+                help heal it. Back the{" "}
+                <strong className="font-semibold text-stone-800">
+                  {SUPPORT_FUND.name}
+                </strong>{" "}
+                ({SUPPORT_FUND.shortName}) in restoring one of the planet&apos;s
+                most severe environmental disasters.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href="/support" className="btn-primary">
+                  Learn how to help →
+                </Link>
+                <a
+                  href={SUPPORT_FUND.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary"
+                >
+                  Donate at ecifas.kz
+                </a>
+              </div>
+            </div>
+            <div className="hidden justify-self-end lg:block">
+              <svg
+                className="h-32 w-32 text-ocean-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 0c2.485 0 4.5-4.03 4.5-9S14.485-6 12-6m0 18c-2.485 0-4.5-4.03-4.5-9S9.515-6 12-6M3.6 9h16.8M3.6 15h16.8"
+                  transform="translate(0 6)"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </section>
