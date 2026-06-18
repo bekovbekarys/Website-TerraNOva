@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatDate, formatBytes, authorList } from "@/lib/utils";
+import { CiteExport } from "@/components/CiteExport";
+import { formatDate, formatBytes, authorList, isDemoPreprint } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,9 @@ async function getPreprint(slug: string) {
   return prisma.preprint.findUnique({
     where: { slug },
     include: {
-      submittedBy: { select: { id: true, name: true, affiliation: true } },
+      submittedBy: {
+        select: { id: true, name: true, affiliation: true, email: true },
+      },
     },
   });
 }
@@ -26,9 +29,23 @@ export async function generateMetadata({
   if (!preprint || preprint.status !== "PUBLISHED") {
     return { title: "Preprint" };
   }
+  const description = preprint.abstract.slice(0, 200);
   return {
     title: preprint.title,
-    description: preprint.abstract.slice(0, 200),
+    description,
+    openGraph: {
+      type: "article",
+      title: preprint.title,
+      description,
+      url: `/preprint/${preprint.slug}`,
+      authors: authorList(preprint.authors),
+      publishedTime: (preprint.publishedAt ?? preprint.createdAt).toISOString(),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: preprint.title,
+      description,
+    },
   };
 }
 
@@ -51,6 +68,14 @@ export default async function PreprintPage({
 
   const authors = authorList(preprint.authors);
   const fileUrl = `/api/files/${preprint.slug}`;
+  const isDemo = isDemoPreprint(preprint);
+  const year = new Date(
+    preprint.publishedAt ?? preprint.createdAt
+  ).getFullYear();
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ).replace(/\/+$/, "");
+  const citationUrl = `${siteUrl}/preprint/${preprint.slug}`;
 
   return (
     <div className="container-page max-w-4xl py-10">
@@ -138,6 +163,33 @@ export default async function PreprintPage({
         <p className="prose-abstract mt-3">{preprint.abstract}</p>
       </section>
 
+      {/* Inline PDF preview */}
+      {!isDemo && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold">Read the paper</h2>
+          <div className="card mt-3 overflow-hidden p-0">
+            <iframe
+              src={`${fileUrl}#view=FitH`}
+              title={`PDF preview of ${preprint.title}`}
+              loading="lazy"
+              className="h-[80vh] w-full"
+            />
+          </div>
+          <p className="mt-2 text-sm text-stone-500">
+            Trouble viewing?{" "}
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener"
+              className="font-semibold text-terra-700"
+            >
+              Open the PDF in a new tab
+            </a>
+            .
+          </p>
+        </section>
+      )}
+
       {/* Metadata table */}
       <section className="mt-10">
         <h2 className="text-lg font-bold">Details</h2>
@@ -163,12 +215,12 @@ export default async function PreprintPage({
       {/* Citation */}
       <section className="mt-10">
         <h2 className="text-lg font-bold">How to cite</h2>
-        <div className="card mt-3 bg-stone-50 p-4 text-sm text-stone-700">
-          {authors.join(", ")} ({new Date(
-            preprint.publishedAt ?? preprint.createdAt
-          ).getFullYear()}
-          ). <em>{preprint.title}</em>. TerraNova preprint.
-        </div>
+        <CiteExport
+          title={preprint.title}
+          authors={authors}
+          year={year}
+          url={citationUrl}
+        />
       </section>
     </div>
   );
