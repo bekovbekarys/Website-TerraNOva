@@ -70,10 +70,10 @@ export function Footer() {
       <div className="border-t border-stone-100 py-6">
         <div className="container-page flex flex-col items-center justify-between gap-2 text-xs text-stone-400 sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {SITE_NAME}. Content licensed by authors
-            under open licenses.
+            © 2025-{new Date().getFullYear()} {SITE_NAME}. Content licensed by
+            authors under open licenses.
           </p>
-          <p>Built for open science · Powered by the community</p>
+          <p>Open science since 2025 · Powered by the community</p>
         </div>
       </div>
     </footer>
