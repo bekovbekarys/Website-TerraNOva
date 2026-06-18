@@ -4,12 +4,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { StatusBadge } from "@/components/StatusBadge";
-import {
-  formatDate,
-  formatBytes,
-  authorList,
-  isDemoPreprint,
-} from "@/lib/utils";
+import { formatDate, formatBytes, authorList } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +12,7 @@ async function getPreprint(slug: string) {
   return prisma.preprint.findUnique({
     where: { slug },
     include: {
-      submittedBy: {
-        select: { id: true, name: true, affiliation: true, email: true },
-      },
+      submittedBy: { select: { id: true, name: true, affiliation: true } },
     },
   });
 }
@@ -122,29 +115,13 @@ export default async function PreprintPage({
       </p>
 
       {/* Actions */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        {isDemoPreprint(preprint) ? (
-          <span
-            className="badge bg-stone-100 text-stone-500"
-            title="This is a demonstration entry; no PDF is available."
-          >
-            Sample entry — PDF not available
-          </span>
-        ) : (
-          <>
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener"
-              className="btn-primary"
-            >
-              View PDF
-            </a>
-            <a href={`${fileUrl}?download=1`} download className="btn-secondary">
-              Download ({formatBytes(preprint.fileSize)})
-            </a>
-          </>
-        )}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <a href={fileUrl} target="_blank" rel="noopener" className="btn-primary">
+          View PDF
+        </a>
+        <a href={`${fileUrl}?download=1`} download className="btn-secondary">
+          Download ({formatBytes(preprint.fileSize)})
+        </a>
         {(isOwner || isAdmin) && (
           <Link
             href={isAdmin ? "/admin" : "/dashboard"}
