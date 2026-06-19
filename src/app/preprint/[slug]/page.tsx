@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { CiteExport } from "@/components/CiteExport";
 import { PreprintCard } from "@/components/PreprintCard";
 import { OrcidLink } from "@/components/OrcidLink";
-import { formatDate, formatBytes, authorList, isDemoPreprint } from "@/lib/utils";
+import { formatDate, formatBytes, authorList } from "@/lib/utils";
 import { getDict, format } from "@/lib/i18n";
 
 const CARD_FIELDS = {
@@ -87,7 +87,6 @@ export default async function PreprintPage({
 
   const authors = authorList(preprint.authors);
   const fileUrl = `/api/files/${preprint.slug}`;
-  const isDemo = isDemoPreprint(preprint);
   const year = new Date(
     preprint.publishedAt ?? preprint.createdAt
   ).getFullYear();
@@ -251,31 +250,29 @@ export default async function PreprintPage({
       </section>
 
       {/* Inline PDF preview */}
-      {!isDemo && (
-        <section className="mt-10">
-          <h2 className="text-lg font-bold">{t.readPaper}</h2>
-          <div className="card mt-3 overflow-hidden p-0">
-            <iframe
-              src={`${fileUrl}#view=FitH`}
-              title={`PDF preview of ${preprint.title}`}
-              loading="lazy"
-              className="h-[80vh] w-full"
-            />
-          </div>
-          <p className="mt-2 text-sm text-stone-500">
-            {t.troubleViewing}
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener"
-              className="font-semibold text-terra-700"
-            >
-              {t.openNewTab}
-            </a>
-            .
-          </p>
-        </section>
-      )}
+      <section className="mt-10">
+        <h2 className="text-lg font-bold">{t.readPaper}</h2>
+        <div className="card mt-3 overflow-hidden p-0">
+          <iframe
+            src={`${fileUrl}#view=FitH`}
+            title={`PDF preview of ${preprint.title}`}
+            loading="lazy"
+            className="h-[80vh] w-full"
+          />
+        </div>
+        <p className="mt-2 text-sm text-stone-500">
+          {t.troubleViewing}
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener"
+            className="font-semibold text-terra-700"
+          >
+            {t.openNewTab}
+          </a>
+          .
+        </p>
+      </section>
 
       {/* Metadata table */}
       <section className="mt-10">

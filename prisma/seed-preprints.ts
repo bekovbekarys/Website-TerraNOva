@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { promises as fs } from "fs";
 import path from "path";
+import { buildPaperPdf } from "./sample-paper";
 
 const prisma = new PrismaClient();
 
@@ -325,7 +326,19 @@ async function main() {
 
   for (const [i, p] of PREPRINTS.entries()) {
     const slug = slugify(p.title);
-    const pdf = unavailablePdf();
+    const persona = AUTHORS[p.by];
+    const pdf = await buildPaperPdf({
+      title: p.title,
+      authors: p.authors,
+      subject: p.subject,
+      keywords: p.keywords,
+      license: p.license,
+      abstract: p.abstract,
+      affiliation: persona.affiliation,
+      correspondingName: persona.name,
+      correspondingEmail: persona.email,
+      publishedAt: p.publishedAt,
+    });
     const existing = await prisma.preprint.findUnique({ where: { slug } });
 
     if (existing) {

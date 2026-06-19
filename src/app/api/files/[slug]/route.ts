@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { readFile } from "@/lib/storage";
-import { isDemoPreprint } from "@/lib/utils";
 import { unavailablePdf } from "@/lib/pdf";
 
 export async function GET(
@@ -14,9 +13,7 @@ export async function GET(
     select: {
       id: true,
       status: true,
-      isSample: true,
       submittedById: true,
-      submittedBy: { select: { email: true } },
       fileStoredName: true,
       fileOriginalName: true,
       fileMime: true,
@@ -25,25 +22,6 @@ export async function GET(
 
   if (!preprint) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
-  }
-
-  // Demonstration preprints have no real manuscript attached. Serve a
-  // placeholder PDF stating that the document is unavailable, so opening or
-  // downloading it never exposes real content.
-  if (isDemoPreprint(preprint)) {
-    const placeholder = unavailablePdf();
-    const body = new Uint8Array(placeholder);
-    const download = new URL(req.url).searchParams.get("download") === "1";
-    const disposition = download ? "attachment" : "inline";
-    return new NextResponse(body, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `${disposition}; filename="unavailable.pdf"`,
-        "Content-Length": String(body.length),
-        "Cache-Control": "private, max-age=0, must-revalidate",
-      },
-    });
   }
 
   // Published files are public. Non-published files are visible only to the
@@ -57,11 +35,25 @@ export async function GET(
     }
   }
 
+  const download = new URL(req.url).searchParams.get("download") === "1";
+  const disposition = download ? "attachment" : "inline";
+
   let data: Buffer;
   try {
     data = await readFile(preprint.fileStoredName);
   } catch {
-    return NextResponse.json({ error: "File missing." }, { status: 404 });
+    // Fall back to a placeholder so the viewer degrades gracefully if the
+    // stored file is ever missing.
+    const placeholder = new Uint8Array(unavailablePdf());
+    return new NextResponse(placeholder, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `${disposition}; filename="unavailable.pdf"`,
+        "Content-Length": String(placeholder.length),
+        "Cache-Control": "private, max-age=0, must-revalidate",
+      },
+    });
   }
 
   // Count downloads for published preprints (fire and forget).
@@ -75,8 +67,6 @@ export async function GET(
   }
 
   const safeName = preprint.fileOriginalName.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const download = new URL(req.url).searchParams.get("download") === "1";
-  const disposition = download ? "attachment" : "inline";
   const body = new Uint8Array(data);
 
   return new NextResponse(body, {
