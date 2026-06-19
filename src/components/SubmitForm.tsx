@@ -3,12 +3,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type InitialValues = {
+  title: string;
+  authors: string;
+  abstract: string;
+  subject: string;
+  keywords: string;
+  license: string;
+  comments: string;
+};
+
 export function SubmitForm({
   subjects,
   licenses,
+  initial,
+  replacesId,
+  replacesTitle,
 }: {
   subjects: string[];
   licenses: string[];
+  initial?: InitialValues;
+  replacesId?: string;
+  replacesTitle?: string;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -48,11 +64,31 @@ export function SubmitForm({
         </div>
       )}
 
+      {replacesId && (
+        <>
+          <input type="hidden" name="replacesId" value={replacesId} />
+          <div className="rounded-lg border border-ocean-200 bg-ocean-50 px-4 py-3 text-sm text-ocean-900">
+            You&apos;re submitting a <strong>new version</strong>
+            {replacesTitle ? ` of “${replacesTitle}”` : ""}. We&apos;ve prefilled
+            the details below. Upload the updated PDF and edit anything that has
+            changed. The new version goes through moderation before it replaces
+            the current one.
+          </div>
+        </>
+      )}
+
       <div>
         <label className="label" htmlFor="title">
           Title
         </label>
-        <input id="title" name="title" required className="input" maxLength={300} />
+        <input
+          id="title"
+          name="title"
+          required
+          className="input"
+          maxLength={300}
+          defaultValue={initial?.title ?? ""}
+        />
       </div>
 
       <div>
@@ -65,6 +101,7 @@ export function SubmitForm({
           required
           className="input"
           placeholder="Jane Doe, John Smith, …"
+          defaultValue={initial?.authors ?? ""}
         />
         <p className="mt-1 text-xs text-stone-500">
           Separate author names with commas, in the order they should appear.
@@ -82,6 +119,7 @@ export function SubmitForm({
           rows={8}
           className="input"
           maxLength={6000}
+          defaultValue={initial?.abstract ?? ""}
         />
       </div>
 
@@ -90,7 +128,13 @@ export function SubmitForm({
           <label className="label" htmlFor="subject">
             Subject area
           </label>
-          <select id="subject" name="subject" required className="input" defaultValue="">
+          <select
+            id="subject"
+            name="subject"
+            required
+            className="input"
+            defaultValue={initial?.subject ?? ""}
+          >
             <option value="" disabled>
               Select a subject…
             </option>
@@ -111,7 +155,7 @@ export function SubmitForm({
             name="license"
             required
             className="input"
-            defaultValue="CC BY 4.0"
+            defaultValue={initial?.license ?? "CC BY 4.0"}
           >
             {licenses.map((l) => (
               <option key={l} value={l}>
@@ -131,6 +175,7 @@ export function SubmitForm({
           name="keywords"
           className="input"
           placeholder="climate modeling, paleoclimate, CMIP6"
+          defaultValue={initial?.keywords ?? ""}
         />
       </div>
 
@@ -143,6 +188,7 @@ export function SubmitForm({
           name="comments"
           className="input"
           placeholder="e.g. 14 pages, 5 figures; submitted to Journal of …"
+          defaultValue={initial?.comments ?? ""}
         />
       </div>
 

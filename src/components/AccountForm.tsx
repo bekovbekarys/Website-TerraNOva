@@ -107,6 +107,18 @@ export function AccountForm({
           className="input"
           placeholder="0000-0000-0000-0000"
         />
+        <p className="mt-1 text-xs text-stone-500">
+          Link your{" "}
+          <a
+            href="https://orcid.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-terra-700"
+          >
+            ORCID iD
+          </a>{" "}
+          so it appears on your preprints.
+        </p>
       </div>
 
       <div>

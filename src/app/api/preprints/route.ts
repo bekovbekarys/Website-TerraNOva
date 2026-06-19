@@ -99,6 +99,41 @@ export async function POST(req: Request) {
     );
   }
 
+  // Optional: this submission is a new version that supersedes an existing one.
+  const replacesId = form.get("replacesId");
+  let versionGroupId: string | null = null;
+  let version = 1;
+  if (typeof replacesId === "string" && replacesId.length > 0) {
+    const original = await prisma.preprint.findUnique({
+      where: { id: replacesId },
+    });
+    if (!original) {
+      return NextResponse.json(
+        { error: "The preprint you are versioning was not found." },
+        { status: 404 }
+      );
+    }
+    if (original.submittedById !== user.id && user.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "You can only post a new version of your own preprint." },
+        { status: 403 }
+      );
+    }
+    versionGroupId = original.versionGroupId ?? original.id;
+    // Backfill the group id on the original so the whole chain shares one.
+    if (!original.versionGroupId) {
+      await prisma.preprint.update({
+        where: { id: original.id },
+        data: { versionGroupId },
+      });
+    }
+    const agg = await prisma.preprint.aggregate({
+      where: { versionGroupId },
+      _max: { version: true },
+    });
+    version = (agg._max.version ?? original.version) + 1;
+  }
+
   const data = parsed.data;
   const slug = await uniqueSlug(data.title);
   const storedName = `${slug}-${Date.now()}.pdf`;
@@ -121,6 +156,10 @@ export async function POST(req: Request) {
       fileSize: file.size,
       status: "PENDING",
       submittedById: user.id,
+      version,
+      versionGroupId,
+      // A new version only becomes the latest once it is published.
+      isLatest: versionGroupId === null,
     },
   });
 

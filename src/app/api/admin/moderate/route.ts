@@ -58,6 +58,39 @@ export async function POST(req: Request) {
     },
   });
 
+  // Keep the "latest version" pointer correct within a version group.
+  if (preprint.versionGroupId) {
+    const groupId = preprint.versionGroupId;
+    if (action === "publish") {
+      // This newly published version becomes the current one.
+      await prisma.preprint.updateMany({
+        where: { versionGroupId: groupId, id: { not: id } },
+        data: { isLatest: false },
+      });
+      await prisma.preprint.update({
+        where: { id },
+        data: { isLatest: true },
+      });
+    } else {
+      // Rejected or unpublished: this is no longer the public version. Promote
+      // the newest still-published version in the group, if any.
+      await prisma.preprint.updateMany({
+        where: { versionGroupId: groupId },
+        data: { isLatest: false },
+      });
+      const newest = await prisma.preprint.findFirst({
+        where: { versionGroupId: groupId, status: "PUBLISHED" },
+        orderBy: { version: "desc" },
+      });
+      if (newest) {
+        await prisma.preprint.update({
+          where: { id: newest.id },
+          data: { isLatest: true },
+        });
+      }
+    }
+  }
+
   // Notify the author of a publish/reject decision. Best-effort: never let an
   // email problem fail the moderation action.
   if (action === "publish" || action === "reject") {

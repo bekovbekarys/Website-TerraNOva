@@ -5,7 +5,19 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CiteExport } from "@/components/CiteExport";
+import { PreprintCard } from "@/components/PreprintCard";
+import { OrcidLink } from "@/components/OrcidLink";
 import { formatDate, formatBytes, authorList, isDemoPreprint } from "@/lib/utils";
+
+const CARD_FIELDS = {
+  slug: true,
+  title: true,
+  abstract: true,
+  authors: true,
+  subject: true,
+  publishedAt: true,
+  createdAt: true,
+} as const;
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +26,13 @@ async function getPreprint(slug: string) {
     where: { slug },
     include: {
       submittedBy: {
-        select: { id: true, name: true, affiliation: true, email: true },
+        select: {
+          id: true,
+          name: true,
+          affiliation: true,
+          email: true,
+          orcid: true,
+        },
       },
     },
   });
@@ -77,6 +95,58 @@ export default async function PreprintPage({
   ).replace(/\/+$/, "");
   const citationUrl = `${siteUrl}/preprint/${preprint.slug}`;
 
+  // Version history within this preprint's group (if any).
+  const versions = preprint.versionGroupId
+    ? await prisma.preprint.findMany({
+        where: { versionGroupId: preprint.versionGroupId },
+        orderBy: { version: "desc" },
+        select: {
+          id: true,
+          slug: true,
+          version: true,
+          status: true,
+          isLatest: true,
+          publishedAt: true,
+          createdAt: true,
+        },
+      })
+    : [];
+  const latest = versions.find((v) => v.isLatest && v.status === "PUBLISHED");
+  const hasNewerVersion = Boolean(latest && latest.slug !== preprint.slug);
+  // Only show versions the viewer is allowed to see.
+  const visibleVersions = versions.filter(
+    (v) => v.status === "PUBLISHED" || isOwner || isAdmin
+  );
+
+  // Related preprints (only meaningful for a published page).
+  const [relatedInSubject, relatedByAuthor] =
+    preprint.status === "PUBLISHED"
+      ? await Promise.all([
+          prisma.preprint.findMany({
+            where: {
+              status: "PUBLISHED",
+              isLatest: true,
+              subject: preprint.subject,
+              id: { not: preprint.id },
+            },
+            orderBy: { publishedAt: "desc" },
+            take: 3,
+            select: CARD_FIELDS,
+          }),
+          prisma.preprint.findMany({
+            where: {
+              status: "PUBLISHED",
+              isLatest: true,
+              submittedById: preprint.submittedById,
+              id: { not: preprint.id },
+            },
+            orderBy: { publishedAt: "desc" },
+            take: 3,
+            select: CARD_FIELDS,
+          }),
+        ])
+      : [[], []];
+
   return (
     <div className="container-page max-w-4xl py-10">
       <nav className="mb-6 text-sm text-stone-500">
@@ -105,6 +175,18 @@ export default async function PreprintPage({
         </div>
       )}
 
+      {hasNewerVersion && latest && (
+        <div className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-ocean-200 bg-ocean-50 px-4 py-3 text-sm text-ocean-900">
+          <span>A newer version of this preprint is available.</span>
+          <Link
+            href={`/preprint/${latest.slug}`}
+            className="font-semibold underline"
+          >
+            View the latest version →
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <Link
           href={`/browse?subject=${encodeURIComponent(preprint.subject)}`}
@@ -130,13 +212,17 @@ export default async function PreprintPage({
         ))}
       </div>
 
-      <p className="mt-2 text-sm text-stone-500">
-        Posted{" "}
-        {formatDate(preprint.publishedAt ?? preprint.createdAt)} · Submitted by{" "}
-        {preprint.submittedBy.name}
-        {preprint.submittedBy.affiliation
-          ? `, ${preprint.submittedBy.affiliation}`
-          : ""}
+      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-stone-500">
+        <span>
+          Posted {formatDate(preprint.publishedAt ?? preprint.createdAt)} ·
+          Submitted by {preprint.submittedBy.name}
+          {preprint.submittedBy.affiliation
+            ? `, ${preprint.submittedBy.affiliation}`
+            : ""}
+        </span>
+        {preprint.submittedBy.orcid && (
+          <OrcidLink orcid={preprint.submittedBy.orcid} />
+        )}
       </p>
 
       {/* Actions */}
@@ -222,6 +308,80 @@ export default async function PreprintPage({
           url={citationUrl}
         />
       </section>
+
+      {/* Version history */}
+      {visibleVersions.length > 1 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold">Version history</h2>
+          <ul className="mt-3 divide-y divide-stone-100 overflow-hidden rounded-xl border border-stone-200">
+            {visibleVersions.map((v) => {
+              const isCurrent = v.slug === preprint.slug;
+              return (
+                <li
+                  key={v.id}
+                  className={`flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm ${
+                    isCurrent ? "bg-stone-50" : ""
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="font-semibold text-stone-800">
+                      Version {v.version}
+                    </span>
+                    {v.isLatest && v.status === "PUBLISHED" && (
+                      <span className="badge bg-terra-100 text-terra-700">
+                        Latest
+                      </span>
+                    )}
+                    {v.status !== "PUBLISHED" && (isOwner || isAdmin) && (
+                      <StatusBadge status={v.status} />
+                    )}
+                    <span className="text-stone-400">
+                      {formatDate(v.publishedAt ?? v.createdAt)}
+                    </span>
+                  </span>
+                  {isCurrent ? (
+                    <span className="text-stone-400">Viewing</span>
+                  ) : (
+                    <Link
+                      href={`/preprint/${v.slug}`}
+                      className="font-semibold text-terra-700 hover:text-terra-800"
+                    >
+                      View →
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
+      {/* Related preprints */}
+      {relatedInSubject.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-lg font-bold">
+            More in {preprint.subject}
+          </h2>
+          <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {relatedInSubject.map((p) => (
+              <PreprintCard key={p.slug} preprint={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {relatedByAuthor.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-lg font-bold">
+            More by {preprint.submittedBy.name}
+          </h2>
+          <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {relatedByAuthor.map((p) => (
+              <PreprintCard key={p.slug} preprint={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

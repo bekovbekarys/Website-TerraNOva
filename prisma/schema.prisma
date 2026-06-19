@@ -56,6 +56,12 @@ model Preprint {
   moderationNote String?
   version        Int      @default(1)
 
+  // Versioning: successive versions of the same work share a versionGroupId.
+  // isLatest marks the current version within a group; public listings show
+  // only the latest version so older ones do not appear as duplicates.
+  versionGroupId String?
+  isLatest       Boolean  @default(true)
+
   // Demonstration data: sample preprints have placeholder PDFs and are not
   // viewable/downloadable. Real submissions leave this false.
   isSample       Boolean  @default(false)
@@ -74,4 +80,5 @@ model Preprint {
 
   @@index([status])
   @@index([subject])
+  @@index([versionGroupId])
 }

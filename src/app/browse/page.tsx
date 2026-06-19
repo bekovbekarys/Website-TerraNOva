@@ -25,7 +25,7 @@ export default async function BrowsePage({
   const sort = searchParams.sort === "oldest" ? "oldest" : "newest";
   const page = Math.max(1, parseInt(searchParams.page ?? "1", 10) || 1);
 
-  const where: any = { status: "PUBLISHED" };
+  const where: any = { status: "PUBLISHED", isLatest: true };
   if (subject && SUBJECTS.includes(subject)) where.subject = subject;
   if (q) {
     where.OR = [

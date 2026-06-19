@@ -76,12 +76,19 @@ export default async function DashboardPage({
                   </h3>
                   <p className="mt-1 text-sm text-stone-500">{p.authors}</p>
                 </div>
-                <Link
-                  href={`/preprint/${p.slug}`}
-                  className="btn-secondary shrink-0"
-                >
-                  View
-                </Link>
+                <div className="flex shrink-0 gap-2">
+                  {p.status === "PUBLISHED" && p.isLatest && (
+                    <Link
+                      href={`/submit?replaces=${p.id}`}
+                      className="btn-secondary"
+                    >
+                      New version
+                    </Link>
+                  )}
+                  <Link href={`/preprint/${p.slug}`} className="btn-secondary">
+                    View
+                  </Link>
+                </div>
               </div>
 
               {p.status === "REJECTED" && p.moderationNote && (

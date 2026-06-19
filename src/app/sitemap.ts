@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let preprintRoutes: MetadataRoute.Sitemap = [];
   try {
     const preprints = await prisma.preprint.findMany({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", isLatest: true },
       select: { slug: true, updatedAt: true },
       orderBy: { publishedAt: "desc" },
       take: 5000,

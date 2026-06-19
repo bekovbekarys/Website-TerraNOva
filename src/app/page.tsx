@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const [recent, total, subjectCounts, downloadAgg] = await Promise.all([
     prisma.preprint.findMany({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", isLatest: true },
       orderBy: { publishedAt: "desc" },
       take: 6,
       select: {
@@ -24,14 +24,14 @@ export default async function HomePage() {
         createdAt: true,
       },
     }),
-    prisma.preprint.count({ where: { status: "PUBLISHED" } }),
+    prisma.preprint.count({ where: { status: "PUBLISHED", isLatest: true } }),
     prisma.preprint.groupBy({
       by: ["subject"],
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", isLatest: true },
       _count: { subject: true },
     }),
     prisma.preprint.aggregate({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", isLatest: true },
       _sum: { downloads: true },
     }),
   ]);
