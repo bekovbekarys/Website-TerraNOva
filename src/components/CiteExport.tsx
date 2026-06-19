@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import type { Dict } from "@/lib/i18n";
 
 type Props = {
   title: string;
   authors: string[];
   year: number;
   url: string;
+  t: Dict["preprint"];
 };
 
 function citeKey(authors: string[], year: number): string {
@@ -41,7 +43,7 @@ function buildRis({ title, authors, year, url }: Props): string {
 }
 
 export function CiteExport(props: Props) {
-  const { title, authors, year } = props;
+  const { title, authors, year, t } = props;
   const [copied, setCopied] = useState(false);
 
   const plain = `${authors.join(", ")} (${year}). ${title}. TerraNova preprint. ${props.url}`;
@@ -73,25 +75,25 @@ export function CiteExport(props: Props) {
   return (
     <div className="card mt-3 bg-stone-50 p-4">
       <p className="text-sm text-stone-700">
-        {authors.join(", ")} ({year}). <em>{title}</em>. TerraNova preprint.
+        {authors.join(", ")} ({year}). <em>{title}</em>. {t.citePreprint}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" onClick={copyPlain} className="btn-secondary text-xs">
-          {copied ? "Copied!" : "Copy citation"}
+          {copied ? t.copied : t.copyCitation}
         </button>
         <button
           type="button"
           onClick={() => download("bib")}
           className="btn-secondary text-xs"
         >
-          Download BibTeX
+          {t.downloadBibtex}
         </button>
         <button
           type="button"
           onClick={() => download("ris")}
           className="btn-secondary text-xs"
         >
-          Download RIS
+          {t.downloadRis}
         </button>
       </div>
     </div>

@@ -1,49 +1,48 @@
 import Link from "next/link";
 import { AralSeaArt } from "@/components/AralSeaArt";
-import { SITE_NAME, SUPPORT_FUND } from "@/lib/constants";
+import { SUPPORT_FUND } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
 export const metadata = {
   title: "Support the Aral Sea",
   description: `Support the ${SUPPORT_FUND.name} (${SUPPORT_FUND.shortName}): restoring one of the world's gravest environmental disasters in Central Asia.`,
 };
 
-const impactCards = [
-  {
-    title: "An environmental catastrophe",
-    body: "Once the world's fourth-largest lake, the Aral Sea has lost the vast majority of its volume since the 1960s after its feeding rivers were diverted for irrigation, leaving exposed seabed, toxic dust storms, and collapsed fisheries.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-      />
-    ),
-  },
-  {
-    title: "Communities at the front line",
-    body: "Millions of people across Kazakhstan, Uzbekistan, and the wider region face water scarcity, salinised soils, and public-health impacts. Restoration work directly supports livelihoods and food security.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
-      />
-    ),
-  },
-  {
-    title: "Restoration that works",
-    body: "Coordinated action, like the Kok-Aral dam on the North Aral Sea, has already brought water and fish back to parts of the basin, proving that recovery is possible with sustained support.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.96 8.96 0 0 0 3.5-.7M12 3a8.96 8.96 0 0 1 0 18M3.6 9h16.8M3.6 15h16.8"
-      />
-    ),
-  },
+const CARD_ICONS = [
+  (
+    <path
+      key="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+    />
+  ),
+  (
+    <path
+      key="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+    />
+  ),
+  (
+    <path
+      key="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.96 8.96 0 0 0 3.5-.7M12 3a8.96 8.96 0 0 1 0 18M3.6 9h16.8M3.6 15h16.8"
+    />
+  ),
 ];
 
 export default function SupportPage() {
+  const t = getDict().support;
+  const impactCards = [
+    { title: t.card1Title, body: t.card1Body, icon: CARD_ICONS[0] },
+    { title: t.card2Title, body: t.card2Body, icon: CARD_ICONS[1] },
+    { title: t.card3Title, body: t.card3Body, icon: CARD_ICONS[2] },
+  ];
+
   return (
     <>
       {/* Hero */}
@@ -64,17 +63,14 @@ export default function SupportPage() {
                 {SUPPORT_FUND.region}
               </span>
               <h1 className="mt-5 font-serif text-4xl font-bold leading-[1.08] text-white sm:text-5xl">
-                Help save the Aral Sea
+                {t.heroTitle}
               </h1>
               <p className="mt-5 max-w-2xl text-lg text-terra-50/90">
-                {SITE_NAME} stands for the Earth system we study. We invite our
-                community to support the{" "}
+                {t.heroPre}
                 <strong className="font-semibold text-white">
                   {SUPPORT_FUND.name}
                 </strong>{" "}
-                ({SUPPORT_FUND.shortName}), the intergovernmental fund leading
-                restoration of one of the planet&apos;s most severe human-made
-                environmental disasters.
+                ({SUPPORT_FUND.shortName}){t.heroPost}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
@@ -83,13 +79,13 @@ export default function SupportPage() {
                   rel="noopener noreferrer"
                   className="btn bg-white text-ocean-800 shadow-lg hover:bg-terra-50"
                 >
-                  Donate &amp; learn more at ecifas.kz →
+                  {t.donate}
                 </a>
                 <Link
                   href="/browse?subject=Hydrology"
                   className="btn border border-white/25 bg-white/5 text-white backdrop-blur hover:bg-white/10"
                 >
-                  Read related research
+                  {t.readResearch}
                 </Link>
               </div>
             </div>
@@ -124,16 +120,10 @@ export default function SupportPage() {
       <section className="container-page py-14">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-wide text-terra-700">
-            Why this cause
+            {t.whyEyebrow}
           </p>
-          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-            Science is only the start. Action saves ecosystems.
-          </h2>
-          <p className="mt-3 text-stone-600">
-            The Aral Sea crisis is a textbook case in environmental science, and
-            a living one. Supporting the fund turns research and awareness into
-            on-the-ground recovery.
-          </p>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{t.whyTitle}</h2>
+          <p className="mt-3 text-stone-600">{t.whyBody}</p>
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -166,26 +156,13 @@ export default function SupportPage() {
       <section className="border-t border-stone-200 bg-white py-14">
         <div className="container-page max-w-3xl">
           <h2 className="text-2xl font-bold">
-            About the {SUPPORT_FUND.shortName}
+            {t.aboutTitlePre}
+            {SUPPORT_FUND.shortName}
           </h2>
           <div className="prose-abstract mt-4 space-y-4 text-stone-700">
-            <p>
-              The {SUPPORT_FUND.name} was founded in 1993 by Kazakhstan,
-              Uzbekistan, Tajikistan, Kyrgyzstan, and Turkmenistan to fund and
-              coordinate joint projects that ease the social, economic, and
-              ecological consequences of the Aral Sea&apos;s shrinkage.
-            </p>
-            <p>
-              Its Executive Committee implements basin-wide programmes that
-              improve water management, restore habitats, and support the
-              communities who depend on the basin. Contributions and partnerships
-              help sustain this long-term work.
-            </p>
-            <p className="text-sm text-stone-500">
-              {SITE_NAME} is an independent preprint server and is not affiliated
-              with the {SUPPORT_FUND.shortName}. We link to the fund&apos;s
-              official website so you can learn more and contribute directly.
-            </p>
+            <p>{t.aboutP1}</p>
+            <p>{t.aboutP2}</p>
+            <p className="text-sm text-stone-500">{t.disclaimer}</p>
           </div>
 
           <div className="mt-8">
@@ -195,7 +172,7 @@ export default function SupportPage() {
               rel="noopener noreferrer"
               className="btn-primary"
             >
-              Visit ecifas.kz →
+              {t.visit}
             </a>
           </div>
         </div>

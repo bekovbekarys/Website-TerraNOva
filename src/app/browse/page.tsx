@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { PreprintCard } from "@/components/PreprintCard";
 import { SUBJECTS } from "@/lib/constants";
+import { getDict, format } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Browse preprints" };
@@ -56,6 +57,14 @@ export default async function BrowsePage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const t = getDict().browse;
+  const countText = [
+    `${total} ${t.published} ${total === 1 ? t.preprintOne : t.preprintMany}`,
+    subject ? format(t.inSubject, { subject }) : "",
+    q ? format(t.matching, { q }) : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   function pageHref(p: number) {
     const params = new URLSearchParams();
@@ -69,12 +78,8 @@ export default async function BrowsePage({
 
   return (
     <div className="container-page py-12">
-      <h1 className="text-3xl font-bold">Browse preprints</h1>
-      <p className="mt-2 text-stone-600">
-        {total} published {total === 1 ? "preprint" : "preprints"}
-        {subject ? ` in ${subject}` : ""}
-        {q ? ` matching “${q}”` : ""}.
-      </p>
+      <h1 className="text-3xl font-bold">{t.title}</h1>
+      <p className="mt-2 text-stone-600">{countText}.</p>
 
       {/* Filters */}
       <form
@@ -86,11 +91,11 @@ export default async function BrowsePage({
           type="search"
           name="q"
           defaultValue={q}
-          placeholder="Search titles, authors, abstracts…"
+          placeholder={t.searchPlaceholder}
           className="input sm:max-w-md"
         />
         <select name="subject" defaultValue={subject} className="input sm:max-w-xs">
-          <option value="">All subjects</option>
+          <option value="">{t.allSubjects}</option>
           {SUBJECTS.map((s) => (
             <option key={s} value={s}>
               {s}
@@ -98,22 +103,22 @@ export default async function BrowsePage({
           ))}
         </select>
         <select name="sort" defaultValue={sort} className="input sm:max-w-[160px]">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
+          <option value="newest">{t.sortNewest}</option>
+          <option value="oldest">{t.sortOldest}</option>
         </select>
         <button type="submit" className="btn-primary">
-          Apply
+          {t.apply}
         </button>
       </form>
 
       {/* Results */}
       {preprints.length === 0 ? (
         <div className="card mt-8 p-12 text-center">
-          <p className="text-lg font-semibold text-stone-900">No preprints found.</p>
+          <p className="text-lg font-semibold text-stone-900">{t.emptyTitle}</p>
           <p className="mt-1 text-stone-600">
-            Try a different search, or{" "}
+            {t.emptyBody}
             <Link href="/browse" className="font-semibold text-terra-700">
-              clear your filters
+              {t.emptyClear}
             </Link>
             .
           </p>
@@ -131,15 +136,15 @@ export default async function BrowsePage({
         <div className="mt-10 flex items-center justify-center gap-2">
           {page > 1 && (
             <Link href={pageHref(page - 1)} className="btn-secondary">
-              ← Previous
+              {t.prev}
             </Link>
           )}
           <span className="px-3 text-sm text-stone-600">
-            Page {page} of {totalPages}
+            {format(t.pageOf, { p: page, total: totalPages })}
           </span>
           {page < totalPages && (
             <Link href={pageHref(page + 1)} className="btn-secondary">
-              Next →
+              {t.next}
             </Link>
           )}
         </div>

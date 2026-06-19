@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
 import { Logo } from "@/components/Logo";
 import { getCurrentUser } from "@/lib/session";
+import { getDict } from "@/lib/i18n";
 
 export const metadata = { title: "Create an account" };
 
 export default async function RegisterPage() {
   const user = await getCurrentUser();
   if (user) redirect("/dashboard");
+  const t = getDict().auth;
 
   return (
     <div className="container-page flex justify-center py-16">
@@ -17,25 +19,22 @@ export default async function RegisterPage() {
           <Link href="/" className="inline-flex items-center gap-2">
             <Logo className="h-10 w-10" />
           </Link>
-          <h1 className="mt-4 text-2xl font-bold">Create your account</h1>
-          <p className="mt-1 text-stone-600">
-            Join the community and start sharing your research.
-          </p>
+          <h1 className="mt-4 text-2xl font-bold">{t.createTitle}</h1>
+          <p className="mt-1 text-stone-600">{t.createSub}</p>
         </div>
         <div className="card p-6 sm:p-8">
-          <AuthForm mode="register" />
+          <AuthForm mode="register" t={t} />
         </div>
         <p className="mt-6 text-center text-xs text-stone-500">
-          By creating an account you agree to our{" "}
+          {t.tosPre}
           <Link href="/terms" className="font-medium text-terra-700">
-            Terms of Use
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy" className="font-medium text-terra-700">
-            Privacy Policy
+            {t.tosTerms}
           </Link>
-          , and to post only scholarly work for which you hold the rights to
-          share.
+          {t.tosAnd}
+          <Link href="/privacy" className="font-medium text-terra-700">
+            {t.tosPrivacy}
+          </Link>
+          {t.tosPost}
         </p>
       </div>
     </div>

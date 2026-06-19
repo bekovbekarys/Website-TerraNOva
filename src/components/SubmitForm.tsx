@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Dict } from "@/lib/i18n";
 
 type InitialValues = {
   title: string;
@@ -16,12 +17,14 @@ type InitialValues = {
 export function SubmitForm({
   subjects,
   licenses,
+  t,
   initial,
   replacesId,
   replacesTitle,
 }: {
   subjects: string[];
   licenses: string[];
+  t: Dict["submit"];
   initial?: InitialValues;
   replacesId?: string;
   replacesTitle?: string;
@@ -44,14 +47,14 @@ export function SubmitForm({
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Submission failed.");
+        setError(data.error ?? t.failed);
         setLoading(false);
         return;
       }
       router.push("/dashboard?submitted=1");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError(t.networkError);
       setLoading(false);
     }
   }
@@ -68,18 +71,19 @@ export function SubmitForm({
         <>
           <input type="hidden" name="replacesId" value={replacesId} />
           <div className="rounded-lg border border-ocean-200 bg-ocean-50 px-4 py-3 text-sm text-ocean-900">
-            You&apos;re submitting a <strong>new version</strong>
-            {replacesTitle ? ` of “${replacesTitle}”` : ""}. We&apos;ve prefilled
-            the details below. Upload the updated PDF and edit anything that has
-            changed. The new version goes through moderation before it replaces
-            the current one.
+            {t.newVersionPre}
+            <strong>{t.newVersionBold}</strong>
+            {replacesTitle
+              ? t.newVersionOf.replace("{title}", replacesTitle)
+              : ""}
+            {t.newVersionPost}
           </div>
         </>
       )}
 
       <div>
         <label className="label" htmlFor="title">
-          Title
+          {t.titleLabel}
         </label>
         <input
           id="title"
@@ -93,7 +97,7 @@ export function SubmitForm({
 
       <div>
         <label className="label" htmlFor="authors">
-          Authors
+          {t.authors}
         </label>
         <input
           id="authors"
@@ -103,14 +107,12 @@ export function SubmitForm({
           placeholder="Jane Doe, John Smith, …"
           defaultValue={initial?.authors ?? ""}
         />
-        <p className="mt-1 text-xs text-stone-500">
-          Separate author names with commas, in the order they should appear.
-        </p>
+        <p className="mt-1 text-xs text-stone-500">{t.authorsHint}</p>
       </div>
 
       <div>
         <label className="label" htmlFor="abstract">
-          Abstract
+          {t.abstract}
         </label>
         <textarea
           id="abstract"
@@ -126,7 +128,7 @@ export function SubmitForm({
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="subject">
-            Subject area
+            {t.subject}
           </label>
           <select
             id="subject"
@@ -136,7 +138,7 @@ export function SubmitForm({
             defaultValue={initial?.subject ?? ""}
           >
             <option value="" disabled>
-              Select a subject…
+              {t.selectSubject}
             </option>
             {subjects.map((s) => (
               <option key={s} value={s}>
@@ -148,7 +150,7 @@ export function SubmitForm({
 
         <div>
           <label className="label" htmlFor="license">
-            License
+            {t.license}
           </label>
           <select
             id="license"
@@ -168,33 +170,33 @@ export function SubmitForm({
 
       <div>
         <label className="label" htmlFor="keywords">
-          Keywords <span className="text-stone-400">(optional)</span>
+          {t.keywords} <span className="text-stone-400">{t.optional}</span>
         </label>
         <input
           id="keywords"
           name="keywords"
           className="input"
-          placeholder="climate modeling, paleoclimate, CMIP6"
+          placeholder={t.keywordsPlaceholder}
           defaultValue={initial?.keywords ?? ""}
         />
       </div>
 
       <div>
         <label className="label" htmlFor="comments">
-          Comments <span className="text-stone-400">(optional)</span>
+          {t.comments} <span className="text-stone-400">{t.optional}</span>
         </label>
         <input
           id="comments"
           name="comments"
           className="input"
-          placeholder="e.g. 14 pages, 5 figures; submitted to Journal of …"
+          placeholder={t.commentsPlaceholder}
           defaultValue={initial?.comments ?? ""}
         />
       </div>
 
       <div>
         <label className="label" htmlFor="file">
-          Manuscript (PDF)
+          {t.manuscript}
         </label>
         <label
           htmlFor="file"
@@ -214,9 +216,9 @@ export function SubmitForm({
             />
           </svg>
           <span className="mt-2 text-sm font-medium text-stone-700">
-            {fileName ?? "Click to choose your PDF file"}
+            {fileName ?? t.chooseFile}
           </span>
-          <span className="mt-1 text-xs text-stone-500">PDF only · up to 30 MB</span>
+          <span className="mt-1 text-xs text-stone-500">{t.pdfOnly}</span>
         </label>
         <input
           id="file"
@@ -230,12 +232,11 @@ export function SubmitForm({
       </div>
 
       <div className="rounded-lg bg-ocean-50 px-4 py-3 text-sm text-ocean-900">
-        By submitting, you confirm you have the right to share this work and that
-        it will be screened by a moderator before appearing publicly.
+        {t.confirm}
       </div>
 
       <button type="submit" className="btn-primary w-full sm:w-auto" disabled={loading}>
-        {loading ? "Uploading…" : "Submit preprint"}
+        {loading ? t.uploading : t.submitBtn}
       </button>
     </form>
   );

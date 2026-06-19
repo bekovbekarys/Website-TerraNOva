@@ -4,8 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { TurnstileWidget } from "@/components/TurnstileWidget";
+import type { Dict } from "@/lib/i18n";
 
-export function AuthForm({ mode }: { mode: "login" | "register" }) {
+export function AuthForm({
+  mode,
+  t,
+}: {
+  mode: "login" | "register";
+  t: Dict["auth"];
+}) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,14 +34,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong.");
+        setError(data.error ?? t.somethingWrong);
         setLoading(false);
         return;
       }
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError(t.networkError);
       setLoading(false);
     }
   }
@@ -51,19 +58,19 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         <>
           <div>
             <label className="label" htmlFor="name">
-              Full name
+              {t.fullName}
             </label>
             <input id="name" name="name" required className="input" autoComplete="name" />
           </div>
           <div>
             <label className="label" htmlFor="affiliation">
-              Affiliation <span className="text-stone-400">(optional)</span>
+              {t.affiliation} <span className="text-stone-400">{t.optional}</span>
             </label>
             <input
               id="affiliation"
               name="affiliation"
               className="input"
-              placeholder="University, institute, or organization"
+              placeholder={t.affiliationPlaceholder}
               autoComplete="organization"
             />
           </div>
@@ -72,7 +79,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
       <div>
         <label className="label" htmlFor="email">
-          Email
+          {t.email}
         </label>
         <input
           id="email"
@@ -87,14 +94,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       <div>
         <div className="flex items-baseline justify-between">
           <label className="label" htmlFor="password">
-            Password
+            {t.password}
           </label>
           {mode === "login" && (
             <Link
               href="/forgot-password"
               className="text-xs font-medium text-terra-700 hover:text-terra-800"
             >
-              Forgot password?
+              {t.forgot}
             </Link>
           )}
         </div>
@@ -108,7 +115,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           autoComplete={mode === "login" ? "current-password" : "new-password"}
         />
         {mode === "register" && (
-          <p className="mt-1 text-xs text-stone-500">At least 8 characters.</p>
+          <p className="mt-1 text-xs text-stone-500">{t.atLeast8}</p>
         )}
       </div>
 
@@ -116,25 +123,25 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading
-          ? "Please wait…"
+          ? t.pleaseWait
           : mode === "login"
-            ? "Sign in"
-            : "Create account"}
+            ? t.signIn
+            : t.createAccount}
       </button>
 
       <p className="text-center text-sm text-stone-600">
         {mode === "login" ? (
           <>
-            New to TerraNova?{" "}
+            {t.newToTerra}{" "}
             <Link href="/register" className="font-semibold text-terra-700">
-              Create an account
+              {t.createLink}
             </Link>
           </>
         ) : (
           <>
-            Already have an account?{" "}
+            {t.haveAccount}{" "}
             <Link href="/login" className="font-semibold text-terra-700">
-              Sign in
+              {t.signIn}
             </Link>
           </>
         )}

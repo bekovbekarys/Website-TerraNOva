@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
 export function Footer() {
+  const t = getDict().footer;
   return (
     <footer className="mt-20 border-t border-stone-200 bg-white">
       <div className="container-page grid gap-8 py-12 md:grid-cols-4">
@@ -14,69 +16,66 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-stone-600">{SITE_TAGLINE}.</p>
-          <p className="mt-4 text-xs text-stone-400">
-            Preprints are not peer-reviewed. Opinions expressed are those of the
-            authors.
-          </p>
+          <p className="mt-4 text-xs text-stone-400">{t.notPeerReviewed}</p>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-stone-900">Explore</h3>
+          <h3 className="text-sm font-semibold text-stone-900">{t.explore}</h3>
           <ul className="mt-3 space-y-2 text-sm text-stone-600">
             <li>
               <Link href="/browse" className="hover:text-terra-700">
-                Browse preprints
+                {t.browsePreprints}
               </Link>
             </li>
             <li>
               <Link href="/submit" className="hover:text-terra-700">
-                Submit a preprint
+                {t.submitPreprint}
               </Link>
             </li>
             <li>
               <Link href="/guidelines" className="hover:text-terra-700">
-                Submission guidelines
+                {t.guidelines}
               </Link>
             </li>
             <li>
               <Link href="/about" className="hover:text-terra-700">
-                About TerraNova
+                {t.about}
               </Link>
             </li>
             <li>
               <Link href="/support" className="hover:text-terra-700">
-                Support the Aral Sea
+                {t.support}
               </Link>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-stone-900">Policies</h3>
+          <h3 className="text-sm font-semibold text-stone-900">{t.policies}</h3>
           <ul className="mt-3 space-y-2 text-sm text-stone-600">
             <li>
               <Link href="/about#moderation" className="hover:text-terra-700">
-                Moderation policy
+                {t.moderationPolicy}
               </Link>
             </li>
             <li>
               <Link href="/about#licensing" className="hover:text-terra-700">
-                Licensing
+                {t.licensing}
               </Link>
             </li>
             <li>
               <Link href="/privacy" className="hover:text-terra-700">
-                Privacy Policy
+                {t.privacy}
               </Link>
             </li>
             <li>
               <Link href="/terms" className="hover:text-terra-700">
-                Terms of Use
+                {t.terms}
               </Link>
             </li>
             <li>
               <Link href="/about#contact" className="hover:text-terra-700">
-                Contact
+                {t.contact}
               </Link>
             </li>
           </ul>
@@ -85,10 +84,9 @@ export function Footer() {
       <div className="border-t border-stone-100 py-6">
         <div className="container-page flex flex-col items-center justify-between gap-2 text-xs text-stone-400 sm:flex-row">
           <p>
-            © 2025-{new Date().getFullYear()} {SITE_NAME}. Content licensed by
-            authors under open licenses.
+            © 2025-{new Date().getFullYear()} {SITE_NAME}. {t.rights}
           </p>
-          <p>Open science since 2025 · Powered by the community</p>
+          <p>{t.tagline}</p>
         </div>
       </div>
     </footer>

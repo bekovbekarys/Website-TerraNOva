@@ -8,6 +8,7 @@ import { CiteExport } from "@/components/CiteExport";
 import { PreprintCard } from "@/components/PreprintCard";
 import { OrcidLink } from "@/components/OrcidLink";
 import { formatDate, formatBytes, authorList, isDemoPreprint } from "@/lib/utils";
+import { getDict, format } from "@/lib/i18n";
 
 const CARD_FIELDS = {
   slug: true,
@@ -147,11 +148,13 @@ export default async function PreprintPage({
         ])
       : [[], []];
 
+  const t = getDict().preprint;
+
   return (
     <div className="container-page max-w-4xl py-10">
       <nav className="mb-6 text-sm text-stone-500">
         <Link href="/browse" className="hover:text-terra-700">
-          Browse
+          {t.browse}
         </Link>{" "}
         /{" "}
         <Link
@@ -166,23 +169,21 @@ export default async function PreprintPage({
         <div className="mb-6 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <StatusBadge status={preprint.status} />
           <span>
-            This preprint is{" "}
             {preprint.status === "PENDING"
-              ? "awaiting moderation and is not yet public."
-              : "not currently published."}{" "}
-            Only you and moderators can see this page.
+              ? t.pendingBanner
+              : t.unpublishedBanner}
           </span>
         </div>
       )}
 
       {hasNewerVersion && latest && (
         <div className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-ocean-200 bg-ocean-50 px-4 py-3 text-sm text-ocean-900">
-          <span>A newer version of this preprint is available.</span>
+          <span>{t.newerVersion}</span>
           <Link
             href={`/preprint/${latest.slug}`}
             className="font-semibold underline"
           >
-            View the latest version →
+            {t.viewLatest}
           </Link>
         </div>
       )}
@@ -195,7 +196,7 @@ export default async function PreprintPage({
           {preprint.subject}
         </Link>
         <span className="badge bg-stone-100 text-stone-600">
-          Version {preprint.version}
+          {t.version} {preprint.version}
         </span>
       </div>
 
@@ -214,8 +215,8 @@ export default async function PreprintPage({
 
       <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-stone-500">
         <span>
-          Posted {formatDate(preprint.publishedAt ?? preprint.createdAt)} ·
-          Submitted by {preprint.submittedBy.name}
+          {t.posted} {formatDate(preprint.publishedAt ?? preprint.createdAt)} ·{" "}
+          {t.submittedBy} {preprint.submittedBy.name}
           {preprint.submittedBy.affiliation
             ? `, ${preprint.submittedBy.affiliation}`
             : ""}
@@ -228,31 +229,31 @@ export default async function PreprintPage({
       {/* Actions */}
       <div className="mt-6 flex flex-wrap gap-3">
         <a href={fileUrl} target="_blank" rel="noopener" className="btn-primary">
-          View PDF
+          {t.viewPdf}
         </a>
         <a href={`${fileUrl}?download=1`} download className="btn-secondary">
-          Download ({formatBytes(preprint.fileSize)})
+          {t.download} ({formatBytes(preprint.fileSize)})
         </a>
         {(isOwner || isAdmin) && (
           <Link
             href={isAdmin ? "/admin" : "/dashboard"}
             className="btn-secondary"
           >
-            Manage
+            {t.manage}
           </Link>
         )}
       </div>
 
       {/* Abstract */}
       <section className="mt-10">
-        <h2 className="text-lg font-bold">Abstract</h2>
+        <h2 className="text-lg font-bold">{t.abstract}</h2>
         <p className="prose-abstract mt-3">{preprint.abstract}</p>
       </section>
 
       {/* Inline PDF preview */}
       {!isDemo && (
         <section className="mt-10">
-          <h2 className="text-lg font-bold">Read the paper</h2>
+          <h2 className="text-lg font-bold">{t.readPaper}</h2>
           <div className="card mt-3 overflow-hidden p-0">
             <iframe
               src={`${fileUrl}#view=FitH`}
@@ -262,14 +263,14 @@ export default async function PreprintPage({
             />
           </div>
           <p className="mt-2 text-sm text-stone-500">
-            Trouble viewing?{" "}
+            {t.troubleViewing}
             <a
               href={fileUrl}
               target="_blank"
               rel="noopener"
               className="font-semibold text-terra-700"
             >
-              Open the PDF in a new tab
+              {t.openNewTab}
             </a>
             .
           </p>
@@ -278,41 +279,42 @@ export default async function PreprintPage({
 
       {/* Metadata table */}
       <section className="mt-10">
-        <h2 className="text-lg font-bold">Details</h2>
+        <h2 className="text-lg font-bold">{t.details}</h2>
         <dl className="mt-3 grid gap-x-8 gap-y-3 sm:grid-cols-2">
-          <Detail label="Subject area" value={preprint.subject} />
-          <Detail label="License" value={preprint.license} />
+          <Detail label={t.subjectArea} value={preprint.subject} />
+          <Detail label={t.license} value={preprint.license} />
           {preprint.keywords && (
-            <Detail label="Keywords" value={preprint.keywords} />
+            <Detail label={t.keywords} value={preprint.keywords} />
           )}
           {preprint.comments && (
-            <Detail label="Comments" value={preprint.comments} />
+            <Detail label={t.comments} value={preprint.comments} />
           )}
           <Detail
-            label="Posted"
+            label={t.posted}
             value={formatDate(preprint.publishedAt ?? preprint.createdAt)}
           />
           {preprint.status === "PUBLISHED" && (
-            <Detail label="Downloads" value={String(preprint.downloads)} />
+            <Detail label={t.downloads} value={String(preprint.downloads)} />
           )}
         </dl>
       </section>
 
       {/* Citation */}
       <section className="mt-10">
-        <h2 className="text-lg font-bold">How to cite</h2>
+        <h2 className="text-lg font-bold">{t.howToCite}</h2>
         <CiteExport
           title={preprint.title}
           authors={authors}
           year={year}
           url={citationUrl}
+          t={t}
         />
       </section>
 
       {/* Version history */}
       {visibleVersions.length > 1 && (
         <section className="mt-10">
-          <h2 className="text-lg font-bold">Version history</h2>
+          <h2 className="text-lg font-bold">{t.versionHistory}</h2>
           <ul className="mt-3 divide-y divide-stone-100 overflow-hidden rounded-xl border border-stone-200">
             {visibleVersions.map((v) => {
               const isCurrent = v.slug === preprint.slug;
@@ -325,11 +327,11 @@ export default async function PreprintPage({
                 >
                   <span className="flex items-center gap-2">
                     <span className="font-semibold text-stone-800">
-                      Version {v.version}
+                      {t.version} {v.version}
                     </span>
                     {v.isLatest && v.status === "PUBLISHED" && (
                       <span className="badge bg-terra-100 text-terra-700">
-                        Latest
+                        {t.latest}
                       </span>
                     )}
                     {v.status !== "PUBLISHED" && (isOwner || isAdmin) && (
@@ -340,13 +342,13 @@ export default async function PreprintPage({
                     </span>
                   </span>
                   {isCurrent ? (
-                    <span className="text-stone-400">Viewing</span>
+                    <span className="text-stone-400">{t.viewing}</span>
                   ) : (
                     <Link
                       href={`/preprint/${v.slug}`}
                       className="font-semibold text-terra-700 hover:text-terra-800"
                     >
-                      View →
+                      {t.viewVersion}
                     </Link>
                   )}
                 </li>
@@ -360,7 +362,7 @@ export default async function PreprintPage({
       {relatedInSubject.length > 0 && (
         <section className="mt-12">
           <h2 className="text-lg font-bold">
-            More in {preprint.subject}
+            {format(t.moreIn, { subject: preprint.subject })}
           </h2>
           <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {relatedInSubject.map((p) => (
@@ -373,7 +375,7 @@ export default async function PreprintPage({
       {relatedByAuthor.length > 0 && (
         <section className="mt-12">
           <h2 className="text-lg font-bold">
-            More by {preprint.submittedBy.name}
+            {format(t.moreBy, { author: preprint.submittedBy.name })}
           </h2>
           <div className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {relatedByAuthor.map((p) => (

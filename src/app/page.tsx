@@ -4,7 +4,8 @@ import { PreprintCard } from "@/components/PreprintCard";
 import { HeroArt } from "@/components/HeroArt";
 import { AralSeaArt } from "@/components/AralSeaArt";
 import { SubjectIcon } from "@/components/SubjectIcon";
-import { SUBJECTS, SITE_TAGLINE, SUPPORT_FUND } from "@/lib/constants";
+import { SUBJECTS, SUPPORT_FUND } from "@/lib/constants";
+import { getDict, format } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -42,11 +43,12 @@ export default async function HomePage() {
   const activeSubjects = subjectCounts.length;
   const totalDownloads = downloadAgg._sum.downloads ?? 0;
 
+  const t = getDict().home;
   const stats = [
-    { value: total.toLocaleString(), label: "Preprints published" },
-    { value: activeSubjects.toLocaleString(), label: "Active subject areas" },
-    { value: totalDownloads.toLocaleString(), label: "Total downloads" },
-    { value: "Free", label: "Forever, for everyone" },
+    { value: total.toLocaleString(), label: t.statsPublished },
+    { value: activeSubjects.toLocaleString(), label: t.statsSubjects },
+    { value: totalDownloads.toLocaleString(), label: t.statsDownloads },
+    { value: t.statsFreeValue, label: t.statsFreeLabel },
   ];
 
   return (
@@ -77,15 +79,12 @@ export default async function HomePage() {
           <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
           <div className="max-w-2xl animate-fade-up">
             <span className="badge bg-white/10 text-terra-50 ring-1 ring-inset ring-white/20 backdrop-blur">
-              Free · Open access · Community-led
+              {t.badge}
             </span>
             <h1 className="mt-5 font-serif text-4xl font-bold leading-[1.05] text-white sm:text-5xl lg:text-6xl">
-              Share your Earth science research, the moment it&apos;s ready.
+              {t.heroTitle}
             </h1>
-            <p className="mt-5 max-w-2xl text-lg text-terra-50/90">
-              {SITE_TAGLINE}. Post a preprint, reach readers worldwide, and
-              establish priority for your work, with no fees and no paywalls.
-            </p>
+            <p className="mt-5 max-w-2xl text-lg text-terra-50/90">{t.heroSub}</p>
 
             {/* Hero search */}
             <form
@@ -96,15 +95,15 @@ export default async function HomePage() {
               <input
                 type="search"
                 name="q"
-                placeholder="Search titles, authors, abstracts, keywords…"
+                placeholder={t.searchPlaceholder}
                 className="input border-transparent bg-white/95 shadow-lg"
-                aria-label="Search preprints"
+                aria-label={t.search}
               />
               <button
                 type="submit"
                 className="btn shrink-0 bg-white text-terra-800 hover:bg-terra-50"
               >
-                Search
+                {t.search}
               </button>
             </form>
 
@@ -113,13 +112,13 @@ export default async function HomePage() {
                 href="/submit"
                 className="btn bg-ocean-400 text-white shadow-lg shadow-ocean-900/30 hover:bg-ocean-300"
               >
-                Submit a preprint
+                {t.submit}
               </Link>
               <Link
                 href="/browse"
                 className="btn border border-white/25 bg-white/5 text-white backdrop-blur hover:bg-white/10"
               >
-                Browse {total > 0 ? `${total} ` : ""}preprints →
+                {format(t.browseN, { n: total > 0 ? `${total} ` : "" })}
               </Link>
             </div>
           </div>
@@ -170,29 +169,25 @@ export default async function HomePage() {
       <section className="container-page py-14">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-2xl font-bold">Latest preprints</h2>
-            <p className="mt-1 text-stone-600">
-              Freshly posted research from the community.
-            </p>
+            <h2 className="text-2xl font-bold">{t.latestTitle}</h2>
+            <p className="mt-1 text-stone-600">{t.latestSub}</p>
           </div>
           <Link
             href="/browse"
             className="hidden text-sm font-semibold text-terra-700 hover:text-terra-800 sm:block"
           >
-            View all →
+            {t.viewAll}
           </Link>
         </div>
 
         {recent.length === 0 ? (
           <div className="card mt-6 p-10 text-center">
             <p className="text-lg font-semibold text-stone-900">
-              No preprints published yet.
+              {t.emptyTitle}
             </p>
-            <p className="mt-1 text-stone-600">
-              Be the first to share your research with the community.
-            </p>
+            <p className="mt-1 text-stone-600">{t.emptySub}</p>
             <Link href="/submit" className="btn-primary mt-5">
-              Submit the first preprint
+              {t.emptyCta}
             </Link>
           </div>
         ) : (
@@ -207,10 +202,8 @@ export default async function HomePage() {
       {/* Subjects */}
       <section className="border-t border-stone-200 bg-white py-14">
         <div className="container-page">
-          <h2 className="text-2xl font-bold">Browse by subject</h2>
-          <p className="mt-1 text-stone-600">
-            Explore preprints across the Earth and environmental sciences.
-          </p>
+          <h2 className="text-2xl font-bold">{t.subjectsTitle}</h2>
+          <p className="mt-1 text-stone-600">{t.subjectsSub}</p>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {SUBJECTS.map((subject) => (
               <Link
@@ -244,20 +237,18 @@ export default async function HomePage() {
                 {SUPPORT_FUND.region}
               </span>
               <h2 className="mt-3 text-2xl font-bold sm:text-3xl">
-                Support a real environmental cause
+                {t.supportTitle}
               </h2>
               <p className="mt-3 max-w-xl text-stone-600">
-                The science we host studies the Earth, and here&apos;s a chance
-                to help heal it. Back the{" "}
+                {t.supportBodyPre}
                 <strong className="font-semibold text-stone-800">
                   {SUPPORT_FUND.name}
                 </strong>{" "}
-                ({SUPPORT_FUND.shortName}) in restoring one of the planet&apos;s
-                most severe environmental disasters.
+                ({SUPPORT_FUND.shortName}){t.supportBodyPost}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/support" className="btn-primary">
-                  Learn how to help →
+                  {t.supportLearn}
                 </Link>
                 <a
                   href={SUPPORT_FUND.url}
@@ -265,7 +256,7 @@ export default async function HomePage() {
                   rel="noopener noreferrer"
                   className="btn-secondary"
                 >
-                  Donate at ecifas.kz
+                  {t.supportDonate}
                 </a>
               </div>
             </div>
@@ -280,18 +271,16 @@ export default async function HomePage() {
       <section className="container-page py-16">
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-terra-700">
-            Simple by design
+            {t.howEyebrow}
           </p>
-          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-            How TerraNova works
-          </h2>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{t.howTitle}</h2>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
             {
               step: "1",
-              title: "Submit your manuscript",
-              body: "Create an account and upload your PDF with a title, abstract, authors, and subject area. It takes a few minutes.",
+              title: t.step1Title,
+              body: t.step1Body,
               icon: (
                 <path
                   strokeLinecap="round"
@@ -302,8 +291,8 @@ export default async function HomePage() {
             },
             {
               step: "2",
-              title: "Quick moderation check",
-              body: "A moderator screens each submission to confirm it is scholarly Earth-science work. This checks suitability, not scientific judgement.",
+              title: t.step2Title,
+              body: t.step2Body,
               icon: (
                 <path
                   strokeLinecap="round"
@@ -314,8 +303,8 @@ export default async function HomePage() {
             },
             {
               step: "3",
-              title: "Published & citable",
-              body: "Once accepted, your preprint goes live with a permanent link, ready to be read, downloaded, and cited worldwide.",
+              title: t.step3Title,
+              body: t.step3Body,
               icon: (
                 <path
                   strokeLinecap="round"
@@ -364,24 +353,21 @@ export default async function HomePage() {
           />
           <div className="relative mx-auto max-w-2xl">
             <h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">
-              Ready to share your research?
+              {t.ctaTitle}
             </h2>
-            <p className="mt-3 text-lg text-terra-50/90">
-              Join the community and get your work in front of readers worldwide,
-              free of charge.
-            </p>
+            <p className="mt-3 text-lg text-terra-50/90">{t.ctaSub}</p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Link
                 href="/submit"
                 className="btn bg-white text-terra-800 hover:bg-terra-50"
               >
-                Submit a preprint
+                {t.ctaSubmit}
               </Link>
               <Link
                 href="/guidelines"
                 className="btn border border-white/25 bg-white/5 text-white hover:bg-white/10"
               >
-                Read the guidelines
+                {t.ctaGuidelines}
               </Link>
             </div>
           </div>

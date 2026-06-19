@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate } from "@/lib/utils";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My submissions" };
@@ -15,6 +16,7 @@ export default async function DashboardPage({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/dashboard");
+  const t = getDict().dashboard;
 
   const preprints = await prisma.preprint.findMany({
     where: { submittedById: user.id },
@@ -25,33 +27,26 @@ export default async function DashboardPage({
     <div className="container-page max-w-4xl py-12">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">My submissions</h1>
-          <p className="mt-1 text-stone-600">
-            Track the status of every preprint you&apos;ve submitted.
-          </p>
+          <h1 className="text-3xl font-bold">{t.title}</h1>
+          <p className="mt-1 text-stone-600">{t.sub}</p>
         </div>
         <Link href="/submit" className="btn-primary">
-          New submission
+          {t.newSubmission}
         </Link>
       </div>
 
       {searchParams.submitted === "1" && (
         <div className="mt-6 rounded-lg border border-terra-200 bg-terra-50 px-4 py-3 text-sm text-terra-800">
-          Thanks! Your preprint has been received and is now awaiting moderation.
-          You&apos;ll see it go public here once it&apos;s approved.
+          {t.submitted}
         </div>
       )}
 
       {preprints.length === 0 ? (
         <div className="card mt-8 p-12 text-center">
-          <p className="text-lg font-semibold text-stone-900">
-            You haven&apos;t submitted anything yet.
-          </p>
-          <p className="mt-1 text-stone-600">
-            Ready to share your research with the world?
-          </p>
+          <p className="text-lg font-semibold text-stone-900">{t.emptyTitle}</p>
+          <p className="mt-1 text-stone-600">{t.emptySub}</p>
           <Link href="/submit" className="btn-primary mt-5">
-            Submit your first preprint
+            {t.emptyCta}
           </Link>
         </div>
       ) : (
@@ -82,18 +77,18 @@ export default async function DashboardPage({
                       href={`/submit?replaces=${p.id}`}
                       className="btn-secondary"
                     >
-                      New version
+                      {t.newVersion}
                     </Link>
                   )}
                   <Link href={`/preprint/${p.slug}`} className="btn-secondary">
-                    View
+                    {t.view}
                   </Link>
                 </div>
               </div>
 
               {p.status === "REJECTED" && p.moderationNote && (
                 <div className="mt-3 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  <span className="font-semibold">Moderator note:</span>{" "}
+                  <span className="font-semibold">{t.moderatorNote}</span>{" "}
                   {p.moderationNote}
                 </div>
               )}

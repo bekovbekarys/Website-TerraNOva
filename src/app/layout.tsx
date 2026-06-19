@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { getCurrentUser } from "@/lib/session";
+import { getLocale } from "@/lib/i18n";
 import { SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from "@/lib/constants";
 
 const inter = Inter({
@@ -50,9 +51,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const user = await getCurrentUser();
+  const locale = getLocale();
 
   return (
-    <html lang="en" className={`${inter.variable} ${serif.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${serif.variable}`}>
       <body className="flex min-h-screen flex-col">
         <Navbar user={user} />
         <main className="flex-1">{children}</main>

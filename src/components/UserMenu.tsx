@@ -4,8 +4,15 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { CurrentUser } from "@/lib/session";
+import type { Dict } from "@/lib/i18n";
 
-export function UserMenu({ user }: { user: CurrentUser }) {
+export function UserMenu({
+  user,
+  t,
+}: {
+  user: CurrentUser;
+  t: Dict["userMenu"];
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -54,18 +61,18 @@ export function UserMenu({ user }: { user: CurrentUser }) {
             <p className="truncate text-xs text-stone-500">{user.email}</p>
           </div>
           <MenuItem href="/dashboard" onClick={() => setOpen(false)}>
-            My submissions
+            {t.mySubmissions}
           </MenuItem>
           <MenuItem href="/submit" onClick={() => setOpen(false)}>
-            Submit a preprint
+            {t.submitPreprint}
           </MenuItem>
           <MenuItem href="/account" onClick={() => setOpen(false)}>
-            Account settings
+            {t.accountSettings}
           </MenuItem>
           {user.role === "ADMIN" && (
             <MenuItem href="/admin" onClick={() => setOpen(false)}>
               <span className="font-semibold text-terra-700">
-                Moderation dashboard
+                {t.moderationDashboard}
               </span>
             </MenuItem>
           )}
@@ -73,7 +80,7 @@ export function UserMenu({ user }: { user: CurrentUser }) {
             onClick={logout}
             className="block w-full border-t border-stone-100 px-4 py-2.5 text-left text-sm text-stone-700 transition hover:bg-stone-100"
           >
-            Sign out
+            {t.signOut}
           </button>
         </div>
       )}
