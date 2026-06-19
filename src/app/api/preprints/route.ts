@@ -70,8 +70,10 @@ export async function POST(req: Request) {
     );
   }
 
+  // Note: avoid `instanceof File` — the File global only exists in Node 20+.
+  // FormData.get() returns a File | string | null; narrow without the global.
   const file = form.get("file");
-  if (!(file instanceof File) || file.size === 0) {
+  if (!file || typeof file === "string" || file.size === 0) {
     return NextResponse.json(
       { error: "Please attach your manuscript as a PDF." },
       { status: 400 }
