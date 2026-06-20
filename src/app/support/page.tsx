@@ -162,7 +162,6 @@ export default function SupportPage() {
           <div className="prose-abstract mt-4 space-y-4 text-stone-700">
             <p>{t.aboutP1}</p>
             <p>{t.aboutP2}</p>
-            <p className="text-sm text-stone-500">{t.disclaimer}</p>
           </div>
 
           <div className="mt-8">

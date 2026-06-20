@@ -200,8 +200,6 @@ export const en = {
       "The International Fund for Saving the Aral Sea was founded in 1993 by Kazakhstan, Uzbekistan, Tajikistan, Kyrgyzstan, and Turkmenistan to fund and coordinate joint projects that ease the social, economic, and ecological consequences of the Aral Sea's shrinkage.",
     aboutP2:
       "Its Executive Committee implements basin-wide programmes that improve water management, restore habitats, and support the communities who depend on the basin. Contributions and partnerships help sustain this long-term work.",
-    disclaimer:
-      "TerraNova is an independent preprint server and is not affiliated with the IFAS. We link to the fund's official website so you can learn more and contribute directly.",
     visit: "Visit ecifas.kz →",
   },
   preprint: {
