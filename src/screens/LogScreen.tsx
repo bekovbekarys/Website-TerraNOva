@@ -82,7 +82,10 @@ export function LogScreen() {
             className="shorthand"
             value={text}
             placeholder={PLACEHOLDER}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setText(e.target.value);
+              setSavedAt(undefined);
+            }}
             rows={5}
             autoCapitalize="off"
             autoCorrect="off"

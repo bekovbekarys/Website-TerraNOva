@@ -82,7 +82,7 @@ export function StatsScreen() {
           <StatTile label="VPIP" rate={agg.vpip} hint="hands" />
           <StatTile label="PFR" rate={agg.pfr} hint="hands" />
           <StatTile label="3-bet" rate={agg.threeBet} hint="chances" digits={1} />
-          <StatTile label="Fold to 3-bet" rate={agg.foldTo3Bet} hint="faced" />
+          <StatTile label="Fold to 3-bet" rate={agg.foldTo3Bet} hint="3-bets faced" />
           <StatTile label="Limp" rate={agg.limpRate} hint="hands played" />
         </div>
         <p className="note" style={{ marginTop: 6 }}>

@@ -40,14 +40,17 @@ self.addEventListener('fetch', (event) => {
           caches.open(VERSION).then((cache) => cache.put('./', copy));
           return response;
         })
-        .catch(() => caches.match('./')),
+        .catch(() => caches.match('./', { ignoreVary: true })),
     );
     return;
   }
 
-  // cache-first for everything else (assets are content-hashed)
+  // cache-first for everything else (assets are content-hashed).
+  // ignoreVary matters: dev/static servers often send `Vary: Origin`,
+  // and crossorigin-attributed requests would otherwise never match
+  // the entries stored at install time.
   event.respondWith(
-    caches.match(request).then(
+    caches.match(request, { ignoreVary: true }).then(
       (cached) =>
         cached ??
         fetch(request).then((response) => {

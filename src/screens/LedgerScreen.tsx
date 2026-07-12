@@ -211,7 +211,9 @@ function BreakdownTable({ title, rows, keyHeader }: { title: string; rows: Group
                 <td className={`num ${r.profit >= 0 ? 'win-text' : 'loss-text'}`}>
                   {formatMoney(r.profit, { sign: true })}
                 </td>
-                <td className="num">{r.hourly === undefined ? '—' : formatMoney(r.hourly, { sign: true })}</td>
+                <td className="num">
+                  {r.hourly === undefined || r.hours < 0.5 ? '—' : formatMoney(r.hourly, { sign: true })}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -271,12 +273,16 @@ export function LedgerScreen() {
                   <div className={`v ${summary.totalProfit >= 0 ? 'win-text' : 'loss-text'}`}>
                     {formatMoney(summary.totalProfit, { sign: true })}
                   </div>
-                  <div className="s">{summary.sessions} sessions</div>
+                  <div className="s">
+                    {summary.sessions} session{summary.sessions === 1 ? '' : 's'}
+                  </div>
                 </div>
                 <div className="tile">
                   <div className="k">Hourly</div>
                   <div className={`v ${(summary.hourly ?? 0) >= 0 ? 'win-text' : 'loss-text'}`}>
-                    {summary.hourly === undefined ? '—' : formatMoney(summary.hourly, { sign: true })}
+                    {summary.hourly === undefined || summary.totalHours < 0.5
+                      ? '—'
+                      : formatMoney(summary.hourly, { sign: true })}
                   </div>
                   <div className="s">{formatHours(summary.totalHours)} played</div>
                 </div>
