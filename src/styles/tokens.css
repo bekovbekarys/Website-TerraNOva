@@ -1,0 +1,43 @@
+/*
+ * Felt Notes design tokens — the single source of truth for color & type.
+ *
+ * Identity: a card-room artifact. Desaturated green-black felt base,
+ * off-white ink, the red of a $5 chip reserved for losses and warnings,
+ * bone/cream reserved for wins. Numbers are the product: tabular
+ * monospaced numerals everywhere a number appears.
+ */
+
+:root {
+  /* felt */
+  --felt-950: #0b100d;
+  --felt-900: #10160f;
+  --felt-850: #141b16;
+  --felt-800: #19221c;
+  --felt-700: #223028;
+  --line: #2a3830;
+  --line-strong: #3b4d42;
+
+  /* ink */
+  --ink: #e9e5d8;
+  --ink-dim: #b0ad9d;
+  --ink-faint: #7c7f70;
+
+  /* chip colors */
+  --loss: #b8382b; /* $5 chip red — losses & warnings only */
+  --loss-text: #e57862; /* legible red for text on felt */
+  --win: #ddd3b2; /* bone/cream — wins only */
+  --card-red: #e57862; /* hearts & diamonds */
+  --card-black: #e9e5d8; /* spades & clubs (ink on dark felt) */
+
+  /* type */
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --font-body: 'Public Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* rhythm */
+  --radius: 3px;
+  --pad: 12px;
+  --nav-height: 56px;
+
+  color-scheme: dark;
+}
