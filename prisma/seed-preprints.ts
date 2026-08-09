@@ -370,6 +370,13 @@ async function main() {
     const slug = slugify(p.title);
     const existing = await prisma.preprint.findUnique({ where: { slug } });
     if (existing) {
+      // Ensure previously seeded rows are flagged as demonstration entries.
+      if (!existing.isDemo) {
+        await prisma.preprint.update({
+          where: { id: existing.id },
+          data: { isDemo: true },
+        });
+      }
       skipped += 1;
       continue;
     }
@@ -396,6 +403,7 @@ async function main() {
         fileMime: "application/pdf",
         fileSize: pdf.length,
         status: "PUBLISHED",
+        isDemo: true,
         submittedById: personaIds[p.by],
         publishedAt: published,
         createdAt,
