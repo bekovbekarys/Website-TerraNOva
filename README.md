@@ -70,6 +70,39 @@ menu (or visit `/admin`) to review, publish, and reject submissions.
 | `ADMIN_PASSWORD`       | Optional password used when seeding the admin account  |
 | `UPLOAD_DIR`           | Directory where uploaded PDFs are stored               |
 | `NEXT_PUBLIC_SITE_URL` | Public site URL used in metadata                       |
+| `ZENODO_TOKEN`         | Zenodo access token; enables DOI minting when set      |
+| `ZENODO_COMMUNITY`     | Your Zenodo community identifier (slug)                |
+| `ZENODO_API_BASE`      | `https://zenodo.org/api` or the sandbox URL            |
+
+## Zenodo / DOI minting
+
+TerraNova can publish a preprint to [Zenodo](https://zenodo.org) and attach a
+permanent DOI, submitting it to your Zenodo community.
+
+**Setup**
+
+1. In Zenodo, go to **Applications → Personal access tokens → New token** and
+   grant the `deposit:write` and `deposit:actions` scopes.
+2. Put the token in `ZENODO_TOKEN`, and your community's identifier (slug) in
+   `ZENODO_COMMUNITY`.
+3. **Test on the sandbox first**: set
+   `ZENODO_API_BASE="https://sandbox.zenodo.org/api"` and use a token from
+   `sandbox.zenodo.org`. Sandbox DOIs are throwaway. When you're happy, switch
+   `ZENODO_API_BASE` back to `https://zenodo.org/api` and use a production token.
+
+**Usage**
+
+Open the **Moderation dashboard**, find a **published** preprint, and click
+**Mint DOI on Zenodo**. TerraNova uploads the PDF, fills in the metadata (title,
+authors, abstract, keywords, licence, subject), submits it to your community, and
+publishes it. The minted DOI then appears on the preprint page, in the "How to
+cite" block, and back in the dashboard.
+
+Notes:
+- Publishing on Zenodo is **irreversible** (DOIs are permanent), so the button
+  asks for confirmation. Demo entries can never be minted.
+- Submitting to a community may require you to accept the record into the
+  community from your Zenodo account, depending on the community's settings.
 
 ## Project structure
 

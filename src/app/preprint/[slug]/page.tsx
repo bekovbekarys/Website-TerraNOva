@@ -26,6 +26,10 @@ export async function generateMetadata({
   if (!preprint || preprint.status !== "PUBLISHED") {
     return { title: "Preprint" };
   }
+  // Demonstration entries expose only their title, never the abstract.
+  if (preprint.isDemo) {
+    return { title: preprint.title };
+  }
   return {
     title: preprint.title,
     description: preprint.abstract.slice(0, 200),
@@ -51,6 +55,66 @@ export default async function PreprintPage({
 
   const authors = authorList(preprint.authors);
   const fileUrl = `/api/files/${preprint.slug}`;
+
+  // Demonstration entries are listed for show only and cannot be opened.
+  if (preprint.isDemo) {
+    return (
+      <div className="container-page max-w-4xl py-10">
+        <nav className="mb-6 text-sm text-stone-500">
+          <Link href="/browse" className="hover:text-terra-700">
+            Browse
+          </Link>{" "}
+          /{" "}
+          <Link
+            href={`/browse?subject=${encodeURIComponent(preprint.subject)}`}
+            className="hover:text-terra-700"
+          >
+            {preprint.subject}
+          </Link>
+        </nav>
+
+        <span className="badge bg-ocean-50 text-ocean-700">{preprint.subject}</span>
+        <h1 className="mt-3 font-serif text-3xl font-bold leading-tight sm:text-4xl">
+          {preprint.title}
+        </h1>
+        <p className="mt-4 text-base font-medium text-stone-700">
+          {authors.join(", ")}
+        </p>
+        <p className="mt-1 text-sm text-stone-500">
+          Posted {formatDate(preprint.publishedAt ?? preprint.createdAt)}
+        </p>
+
+        <div className="card mt-8 flex flex-col items-center gap-3 p-10 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-stone-100 text-stone-500">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.6}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 0h10.5a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5v-6a1.5 1.5 0 0 1 1.5-1.5Z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-stone-900">
+            This entry is not available to open
+          </h2>
+          <p className="max-w-md text-sm leading-relaxed text-stone-600">
+            This is a demonstration record shown to illustrate how the archive
+            looks. Its full text and PDF are not available. Browse newly submitted
+            research to read complete preprints.
+          </p>
+          <Link href="/browse" className="btn-secondary mt-2">
+            Back to browse
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-page max-w-4xl py-10">
@@ -90,6 +154,16 @@ export default async function PreprintPage({
         <span className="badge bg-stone-100 text-stone-600">
           Version {preprint.version}
         </span>
+        {preprint.doi && (
+          <a
+            href={preprint.zenodoUrl || `https://doi.org/${preprint.doi}`}
+            target="_blank"
+            rel="noopener"
+            className="badge bg-terra-100 text-terra-800 hover:bg-terra-200"
+          >
+            DOI: {preprint.doi}
+          </a>
+        )}
       </div>
 
       <h1 className="mt-3 font-serif text-3xl font-bold leading-tight sm:text-4xl">
@@ -168,6 +242,19 @@ export default async function PreprintPage({
             preprint.publishedAt ?? preprint.createdAt
           ).getFullYear()}
           ). <em>{preprint.title}</em>. TerraNova preprint.
+          {preprint.doi ? (
+            <>
+              {" "}
+              <a
+                href={preprint.zenodoUrl || `https://doi.org/${preprint.doi}`}
+                target="_blank"
+                rel="noopener"
+                className="font-semibold text-terra-700 hover:text-terra-800"
+              >
+                https://doi.org/{preprint.doi}
+              </a>
+            </>
+          ) : null}
         </div>
       </section>
     </div>

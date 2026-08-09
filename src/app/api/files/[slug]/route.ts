@@ -12,6 +12,7 @@ export async function GET(
     select: {
       id: true,
       status: true,
+      isDemo: true,
       submittedById: true,
       fileStoredName: true,
       fileOriginalName: true,
@@ -21,6 +22,14 @@ export async function GET(
 
   if (!preprint) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+
+  // Demonstration entries are listed for show only; their files cannot be opened.
+  if (preprint.isDemo) {
+    return NextResponse.json(
+      { error: "This demonstration entry is not available to open." },
+      { status: 403 }
+    );
   }
 
   // Published files are public. Non-published files are visible only to the

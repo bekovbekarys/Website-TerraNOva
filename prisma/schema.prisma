@@ -43,6 +43,15 @@ model Preprint {
   moderationNote String?
   version        Int      @default(1)
 
+  // Demonstration entries are listed publicly but cannot be opened or downloaded.
+  isDemo         Boolean  @default(false)
+
+  // Zenodo / DOI (set when a moderator mints a DOI for a published preprint)
+  doi              String?
+  zenodoRecordId   String?
+  zenodoUrl        String?
+  zenodoConceptDoi String?
+
   submittedBy    User     @relation("AuthorSubmissions", fields: [submittedById], references: [id], onDelete: Cascade)
   submittedById  String
 
