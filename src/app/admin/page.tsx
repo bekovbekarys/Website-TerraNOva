@@ -4,7 +4,9 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ModerationActions } from "@/components/ModerationActions";
-import { formatDate, formatBytes } from "@/lib/utils";
+import { ZenodoAction } from "@/components/ZenodoAction";
+import { zenodoConfigured } from "@/lib/zenodo";
+import { formatDate, formatBytes, isDemoPreprint } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Moderation dashboard" };
@@ -41,6 +43,7 @@ export default async function AdminPage({
   ]);
 
   const countMap = new Map(counts.map((c) => [c.status, c._count.status]));
+  const zenodoOn = zenodoConfigured();
 
   return (
     <div className="container-page max-w-5xl py-12">
@@ -148,6 +151,15 @@ export default async function AdminPage({
               )}
 
               <ModerationActions id={p.id} status={p.status} />
+
+              <ZenodoAction
+                id={p.id}
+                status={p.status}
+                isDemo={isDemoPreprint(p)}
+                configured={zenodoOn}
+                doi={p.doi}
+                zenodoUrl={p.zenodoUrl}
+              />
             </div>
           ))}
         </div>

@@ -66,6 +66,12 @@ model Preprint {
   // viewable/downloadable. Real submissions leave this false.
   isSample       Boolean  @default(false)
 
+  // Zenodo / DOI (set when a moderator mints a DOI for a published preprint)
+  doi              String?
+  zenodoRecordId   String?
+  zenodoUrl        String?
+  zenodoConceptDoi String?
+
   submittedBy    User     @relation("AuthorSubmissions", fields: [submittedById], references: [id], onDelete: Cascade)
   submittedById  String
 

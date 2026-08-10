@@ -197,6 +197,16 @@ export default async function PreprintPage({
         <span className="badge bg-stone-100 text-stone-600">
           {t.version} {preprint.version}
         </span>
+        {preprint.doi && (
+          <a
+            href={preprint.zenodoUrl || `https://doi.org/${preprint.doi}`}
+            target="_blank"
+            rel="noopener"
+            className="badge bg-terra-100 text-terra-800 hover:bg-terra-200"
+          >
+            DOI: {preprint.doi}
+          </a>
+        )}
       </div>
 
       <h1 className="mt-3 font-serif text-3xl font-bold leading-tight sm:text-4xl">
@@ -306,6 +316,19 @@ export default async function PreprintPage({
           url={citationUrl}
           t={t}
         />
+        {preprint.doi && (
+          <p className="mt-3 text-sm text-stone-600">
+            DOI:{" "}
+            <a
+              href={preprint.zenodoUrl || `https://doi.org/${preprint.doi}`}
+              target="_blank"
+              rel="noopener"
+              className="font-semibold text-terra-700 hover:text-terra-800"
+            >
+              https://doi.org/{preprint.doi}
+            </a>
+          </p>
+        )}
       </section>
 
       {/* Version history */}
