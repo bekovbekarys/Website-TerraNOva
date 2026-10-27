@@ -5,11 +5,15 @@ import { HeroArt } from "@/components/HeroArt";
 import { AralSeaArt } from "@/components/AralSeaArt";
 import { SubjectIcon } from "@/components/SubjectIcon";
 import { SUBJECTS, SITE_TAGLINE, SUPPORT_FUND } from "@/lib/constants";
+import { getCachedLibrary } from "@/lib/library";
+import { CentralAsiaMap } from "@/components/library/CentralAsiaMap";
+import { PaperCard } from "@/components/library/PaperCard";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [recent, total, subjectCounts, downloadAgg] = await Promise.all([
+  const [library, recent, total, subjectCounts, downloadAgg] = await Promise.all([
+    getCachedLibrary(),
     prisma.preprint.findMany({
       where: { status: "PUBLISHED" },
       orderBy: { publishedAt: "desc" },
@@ -41,6 +45,14 @@ export default async function HomePage() {
   );
   const activeSubjects = subjectCounts.length;
   const totalDownloads = downloadAgg._sum.downloads ?? 0;
+
+  // Library teaser: the most-cited papers of the last five years
+  const libraryPapers = library?.papers ?? [];
+  const sinceYear = new Date().getFullYear() - 5;
+  const libraryPicks = [...libraryPapers]
+    .filter((p) => p.year >= sinceYear && p.abstract)
+    .sort((a, b) => b.citations - a.citations)
+    .slice(0, 3);
 
   const stats = [
     { value: total.toLocaleString(), label: "Preprints published" },
@@ -203,6 +215,44 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      {/* Central Asia library */}
+      {libraryPicks.length > 0 && (
+        <section className="container-page pb-14">
+          <div className="relative overflow-hidden rounded-[2rem] bg-[#06261b] px-6 py-10 text-white shadow-2xl shadow-terra-950/20 sm:px-10 sm:py-12">
+            <div
+              className="absolute inset-0 opacity-60"
+              style={{
+                backgroundImage:
+                  "radial-gradient(ellipse at 10% 10%, rgba(84,173,127,0.4) 0, transparent 45%), radial-gradient(ellipse at 95% 20%, rgba(26,166,255,0.3) 0, transparent 40%)",
+              }}
+            />
+            <div className="relative grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.15fr_1fr]">
+              <div>
+                <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-terra-100 ring-1 ring-inset ring-white/15">
+                  New · Open-access library
+                </span>
+                <h2 className="mt-4 font-serif text-3xl font-bold leading-tight text-white sm:text-4xl">
+                  {libraryPapers.length.toLocaleString("en-US")} papers on Central Asia, free to read
+                </h2>
+                <p className="mt-3 max-w-xl text-terra-50/85">
+                  Research on the Aral Sea, the glaciers of the Tien Shan and Pamir, the Caspian, and the steppes
+                  and deserts of the five Central Asian countries, gathered in one searchable library.
+                </p>
+                <Link href="/library" className="btn mt-6 bg-white text-terra-900 hover:bg-terra-50">
+                  Explore the library →
+                </Link>
+              </div>
+              <CentralAsiaMap className="hidden w-full lg:block" />
+            </div>
+            <div className="relative mt-10 grid gap-5 md:grid-cols-3">
+              {libraryPicks.map((p) => (
+                <PaperCard key={p.id} paper={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Subjects */}
       <section className="border-t border-stone-200 bg-white py-14">

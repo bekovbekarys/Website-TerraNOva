@@ -17,6 +17,15 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
 
         <nav className="hidden items-center gap-1 md:flex">
           <NavLink href="/browse">Browse</NavLink>
+          <Link
+            href="/library"
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
+          >
+            Library
+            <span className="rounded-full bg-terra-100 px-1.5 text-[10px] font-bold uppercase leading-4 text-terra-700">
+              New
+            </span>
+          </Link>
           <NavLink href="/guidelines">Guidelines</NavLink>
           <NavLink href="/about">About</NavLink>
           <NavLink href="/support">Support</NavLink>
@@ -24,6 +33,12 @@ export function Navbar({ user }: { user: CurrentUser | null }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/library"
+            className="rounded-lg px-2.5 py-2 text-sm font-semibold text-terra-700 hover:bg-terra-50 md:hidden"
+          >
+            Library
+          </Link>
           {user ? (
             <UserMenu user={user} />
           ) : (
