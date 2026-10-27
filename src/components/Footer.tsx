@@ -29,6 +29,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/library" className="hover:text-terra-700">
+                Central Asia library
+              </Link>
+            </li>
+            <li>
               <Link href="/submit" className="hover:text-terra-700">
                 Submit a preprint
               </Link>

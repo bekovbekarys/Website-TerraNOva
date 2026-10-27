@@ -24,6 +24,24 @@ for the site owner.
 - **Secure by default** — hashed passwords (bcrypt), signed httpOnly session
   cookies (JWT), PDF content sniffing, and access-controlled file downloads.
 
+## Central Asia library
+
+`/library` is an open-access reading room of research on the environment and
+Earth sciences of Central Asia (Kazakhstan, Uzbekistan, Kyrgyzstan, Tajikistan,
+Turkmenistan, the Aral Sea basin, the Caspian, the Tien Shan and Pamir).
+
+- Papers come from [OpenAlex](https://openalex.org): open-access journal
+  articles in Earth & planetary science and environmental science that mention
+  the region. The server loads several hundred of them on startup, tags each by
+  place and theme, and caches the set in memory and in `data/library-cache.json`
+  for a week. That is about 5 OpenAlex requests per week.
+- Readers can search, filter by place, theme and year, and sort by citations or
+  date. Each paper has its own page with the abstract, citation and links, and
+  a built-in reader that shows the open-access PDF on the site when the
+  publisher allows it.
+- Optional: set `OPENALEX_API_KEY` (free at openalex.org/settings/api) for a
+  higher daily allowance, and `OPENALEX_MAILTO` to identify the site to OpenAlex.
+
 ## Tech stack
 
 - [Next.js 14](https://nextjs.org/) (App Router) + TypeScript
@@ -78,6 +96,8 @@ menu (or visit `/admin`) to review, publish, and reject submissions.
 | `ADMIN_PASSWORD`       | Optional password used when seeding the admin account  |
 | `UPLOAD_DIR`           | Directory where uploaded PDFs are stored               |
 | `NEXT_PUBLIC_SITE_URL` | Public site URL used in metadata                       |
+| `OPENALEX_API_KEY`     | Optional free OpenAlex key for the Central Asia library |
+| `OPENALEX_MAILTO`      | Optional contact email sent to OpenAlex                |
 
 ## Project structure
 
